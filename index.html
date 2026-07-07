@@ -1,0 +1,3823 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@600;700;800;900&family=Noto+Sans+JP:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+  <title>Tennis Form AI 無料β版 | 1球撮って、フォームの伸びしろを発見</title>
+  <meta name="description" content="スマホで1球撮るだけのAIテニスフォーム診断(無料β版)。動画は外部に送信せず、すべて端末内で解析。今日の1点に絞って上達をサポートします。">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Tennis Form AI">
+  <meta property="og:title" content="Tennis Form AI 無料β版 | 1球撮って、フォームの伸びしろを発見">
+  <meta property="og:description" content="スマホで1球撮るだけのAIフォーム診断。動画は端末内で解析、今日の1点とドリルがすぐわかる。">
+  <meta property="og:url" content="https://shunpedesu.github.io/tennis-form-ai/">
+  <meta property="og:image" content="https://shunpedesu.github.io/tennis-form-ai/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <style>
+    :root {
+      --ink: #101b14;
+      --muted: #67736b;
+      --soft: #eff5ed;
+      --paper: #f8fbf5;
+      --panel: #ffffff;
+      --line: #dce7da;
+      --court: #2f8f58;
+      --court-2: #54b772;
+      --lime: #b8f246;
+      --mint: #87f7c6;
+      --blue: #487dff;
+      --amber: #ffb33f;
+      --red: #f35f58;
+      --shadow: 0 18px 44px rgba(20, 37, 23, .12);
+      --font-ui: "Inter", "Noto Sans JP", "Yu Gothic", "Meiryo", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-jp: "Noto Sans JP", "Yu Gothic", "Meiryo", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 18% 0%, rgba(184, 242, 70, .22), transparent 30%),
+        radial-gradient(circle at 90% 18%, rgba(72, 125, 255, .14), transparent 24%),
+        linear-gradient(180deg, #fbfdf7, #eaf3ec);
+      font-family: var(--font-jp);
+      font-feature-settings: "palt" 1;
+      text-rendering: geometricPrecision;
+    }
+
+    button, input, textarea { font: inherit; }
+
+    .app {
+      max-width: 480px;
+      min-height: 100vh;
+      margin: 0 auto;
+      background: var(--paper);
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 0 0 1px rgba(16, 27, 20, .04);
+    }
+
+    .screen {
+      display: none;
+      min-height: 100vh;
+      padding-bottom: 92px;
+    }
+
+    .screen.active { display: block; }
+
+    .topbar {
+      height: 58px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 0 18px;
+      background: rgba(248, 251, 245, .82);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(220, 231, 218, .78);
+      position: sticky;
+      top: 0;
+      z-index: 5;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      font-family: var(--font-ui);
+      font-weight: 900;
+      letter-spacing: 0;
+    }
+
+    .mark {
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      background:
+        radial-gradient(circle at 30% 28%, #fff 0 13%, transparent 14%),
+        linear-gradient(135deg, var(--lime), var(--mint) 48%, var(--court) 49%);
+      box-shadow: inset 0 0 0 1px rgba(16, 27, 20, .12);
+    }
+
+    .pill {
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--muted);
+      min-height: 32px;
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-size: 12px;
+      font-weight: 800;
+      font-family: var(--font-ui);
+    }
+
+    .hero {
+      min-height: 0;
+      padding-bottom: 18px;
+      background:
+        radial-gradient(circle at 70% 18%, rgba(184,242,70,.35), transparent 20%),
+        linear-gradient(rgba(9, 19, 12, .02), rgba(9, 19, 12, .48)),
+        linear-gradient(140deg, #75d589 0 37%, #36a15e 37% 70%, #1f6f49 70% 100%);
+      position: relative;
+      overflow: hidden;
+      color: #fff;
+    }
+
+    .hero::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(115deg, transparent 0 20%, rgba(255,255,255,.14) 20.5% 21.2%, transparent 22% 46%, rgba(255,255,255,.12) 46.5% 47.1%, transparent 48%),
+        repeating-linear-gradient(90deg, rgba(255,255,255,.03) 0 1px, transparent 1px 22px);
+      opacity: .9;
+      pointer-events: none;
+    }
+
+    .court-lines {
+      position: absolute;
+      inset: 148px -60px 118px;
+      border: 3px solid rgba(255, 255, 255, .7);
+      transform: perspective(380px) rotateX(56deg);
+      transform-origin: center bottom;
+    }
+
+    .court-lines::before,
+    .court-lines::after {
+      content: "";
+      position: absolute;
+      background: rgba(255,255,255,.7);
+    }
+
+    .court-lines::before { width: 3px; height: 100%; left: 50%; top: 0; }
+    .court-lines::after { height: 3px; width: 100%; left: 0; top: 48%; }
+
+    .hero-copy {
+      position: relative;
+      z-index: 2;
+      padding: 58px 22px 18px;
+    }
+
+    .hero h1 {
+      font-size: 42px;
+      line-height: 1.08;
+      margin: 0 0 12px;
+      letter-spacing: 0;
+      font-family: var(--font-ui);
+      font-weight: 900;
+    }
+
+    .hero p {
+      margin: 0;
+      color: rgba(255,255,255,.86);
+      line-height: 1.75;
+      font-size: 14px;
+      font-weight: 500;
+      max-width: 330px;
+    }
+
+    .hero-kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 30px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      color: #102015;
+      background: rgba(184, 242, 70, .96);
+      font-size: 12px;
+      font-weight: 900;
+      font-family: var(--font-ui);
+      margin-bottom: 13px;
+      box-shadow: 0 12px 28px rgba(16,27,20,.18);
+    }
+
+    .hero-visual {
+      position: relative;
+      z-index: 2;
+      height: 140px;
+      margin: 4px 18px 0;
+    }
+
+    .swing-arc {
+      position: absolute;
+      right: 16px;
+      top: 2px;
+      width: 160px;
+      height: 112px;
+      border: 4px solid rgba(184, 242, 70, .85);
+      border-left-color: transparent;
+      border-bottom-color: transparent;
+      border-radius: 50%;
+      transform: rotate(-18deg);
+      filter: drop-shadow(0 0 16px rgba(184,242,70,.35));
+    }
+
+    .ball {
+      position: absolute;
+      right: 48px;
+      top: 20px;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--lime);
+      box-shadow: 0 0 0 8px rgba(184,242,70,.16), 0 12px 28px rgba(16,27,20,.18);
+    }
+
+    .player-card {
+      position: absolute;
+      left: 4px;
+      bottom: 0;
+      width: 176px;
+      min-height: 106px;
+      border-radius: 8px;
+      padding: 12px;
+      background: rgba(12, 24, 15, .68);
+      border: 1px solid rgba(255,255,255,.22);
+      backdrop-filter: blur(14px);
+      box-shadow: 0 16px 34px rgba(16,27,20,.18);
+    }
+
+    .mini-score {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+      margin-bottom: 8px;
+    }
+
+    .mini-score strong {
+      font-family: var(--font-ui);
+      font-size: 34px;
+      line-height: 1;
+      font-weight: 900;
+    }
+
+    .mini-score span {
+      color: rgba(255,255,255,.72);
+      font-size: 12px;
+      font-weight: 900;
+      font-family: var(--font-ui);
+    }
+
+    .mini-bars {
+      display: grid;
+      gap: 6px;
+    }
+
+    .mini-bar {
+      height: 7px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.12);
+      overflow: hidden;
+    }
+
+    .mini-bar span {
+      display: block;
+      height: 100%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--lime), var(--mint));
+    }
+
+    .first-guide {
+      margin: 12px 18px 0;
+      padding: 13px;
+      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,.18);
+      color: #fff;
+      background: rgba(16,27,20,.32);
+      backdrop-filter: blur(14px);
+      position: relative;
+      z-index: 2;
+    }
+
+    .first-guide-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .first-guide-head b {
+      font-family: var(--font-ui);
+      font-size: 14px;
+      font-weight: 900;
+    }
+
+    .first-guide-close {
+      border: 1px solid rgba(255,255,255,.18);
+      background: rgba(255,255,255,.1);
+      color: #fff;
+      border-radius: 999px;
+      padding: 4px 9px;
+      font-size: 11px;
+      font-weight: 900;
+    }
+
+    .first-guide-steps {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 7px;
+    }
+
+    .first-guide-steps span {
+      min-height: 58px;
+      border-radius: 8px;
+      padding: 8px 7px;
+      background: rgba(255,255,255,.1);
+      color: rgba(255,255,255,.82);
+      font-size: 11px;
+      line-height: 1.35;
+      font-weight: 800;
+    }
+
+    .first-guide-steps b {
+      display: block;
+      color: var(--lime);
+      font-family: var(--font-ui);
+      font-size: 13px;
+      margin-bottom: 3px;
+    }
+
+    .instruction-card {
+      margin: 16px;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 14px;
+      box-shadow: 0 10px 28px rgba(20, 37, 23, .06);
+    }
+
+    .instruction-card h2 {
+      margin: 0 0 10px;
+      font-size: 20px;
+      letter-spacing: 0;
+    }
+
+    .shoot-guide {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .shoot-example {
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      overflow: hidden;
+      background: var(--soft);
+    }
+
+    .shoot-example svg {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    .shoot-example b {
+      display: block;
+      padding: 7px 9px 0;
+      font-family: var(--font-ui);
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .shoot-example.good b { color: #286a20; }
+    .shoot-example.bad b { color: #9b5700; }
+
+    .shoot-example span {
+      display: block;
+      padding: 2px 9px 9px;
+      color: var(--muted);
+      font-size: 10px;
+      line-height: 1.4;
+      font-weight: 700;
+    }
+
+    .shoot-guide-note {
+      margin: 10px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      line-height: 1.5;
+    }
+
+    .capture-actions {
+      display: grid;
+      gap: 10px;
+      padding: 18px 18px 12px;
+      background: var(--paper);
+    }
+
+    .shot-selector {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      padding: 12px 18px 0;
+      background: var(--paper);
+    }
+
+    .shot-option {
+      position: relative;
+      min-height: 62px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      color: var(--ink);
+      padding: 9px 6px;
+      font-family: var(--font-ui);
+      font-size: 12px;
+      font-weight: 900;
+      cursor: pointer;
+      box-shadow: 0 8px 20px rgba(20,37,23,.05);
+    }
+
+    .shot-option b {
+      display: block;
+      font-size: 13px;
+      line-height: 1.05;
+      font-weight: 900;
+      letter-spacing: 0;
+    }
+
+    .shot-option span {
+      display: block;
+      margin-top: 5px;
+      color: var(--muted);
+      font-family: var(--font-jp);
+      font-size: 10px;
+      font-weight: 700;
+      line-height: 1.25;
+    }
+
+    .shot-option.active {
+      border-color: rgba(184,242,70,.85);
+      background: #111914;
+      color: #fff;
+      box-shadow: 0 12px 28px rgba(16,27,20,.18);
+    }
+
+    .shot-option.active span {
+      color: rgba(255,255,255,.72);
+    }
+
+    .quick-flow {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      padding: 12px 18px 2px;
+      background: var(--paper);
+    }
+
+    .flow-item {
+      min-height: 76px;
+      border-radius: 8px;
+      background: #fff;
+      border: 1px solid var(--line);
+      padding: 10px 8px;
+      box-shadow: 0 8px 22px rgba(20,37,23,.05);
+    }
+
+    .flow-item b {
+      display: block;
+      font-size: 18px;
+      margin-bottom: 5px;
+      color: var(--court);
+      font-family: var(--font-ui);
+      font-weight: 900;
+    }
+
+    .flow-item span {
+      display: block;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.35;
+      font-weight: 800;
+      font-family: var(--font-jp);
+    }
+
+    .primary,
+    .secondary,
+    .ghost {
+      width: 100%;
+      min-height: 52px;
+      border-radius: 8px;
+      border: 0;
+      font-weight: 900;
+      font-family: var(--font-ui);
+      cursor: pointer;
+    }
+
+    .primary {
+      background: linear-gradient(135deg, #0f1b14, #244c31);
+      color: #fff;
+      box-shadow: 0 14px 30px rgba(16, 27, 20, .22);
+    }
+
+    .secondary {
+      background: #fff;
+      color: var(--ink);
+      border: 1px solid var(--line);
+    }
+
+    .ghost {
+      background: transparent;
+      color: var(--muted);
+      border: 1px solid var(--line);
+    }
+
+    .file-input {
+      position: absolute;
+      inline-size: 1px;
+      block-size: 1px;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .video-panel {
+      margin: 16px;
+      border-radius: 8px;
+      overflow: hidden;
+      background: #101612;
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(255,255,255,.08);
+    }
+
+    .video-wrap {
+      position: relative;
+      aspect-ratio: 9 / 16;
+      background:
+        linear-gradient(rgba(16, 27, 20, .1), rgba(16, 27, 20, .35)),
+        linear-gradient(135deg, var(--court-2), var(--court));
+    }
+
+    video {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+      background: #101612;
+    }
+
+    #cameraPreview {
+      object-fit: cover;
+      object-position: center center;
+    }
+
+    canvas {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .overlay-canvas {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    .empty-video {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      color: rgba(255,255,255,.8);
+      padding: 28px;
+      text-align: center;
+      line-height: 1.6;
+      font-weight: 800;
+    }
+
+    .selected-meta {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 14px;
+      color: rgba(255,255,255,.74);
+      font-size: 12px;
+      border-top: 1px solid rgba(255,255,255,.08);
+    }
+
+    .recording-badge {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      display: none;
+      align-items: center;
+      gap: 7px;
+      min-height: 31px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(16, 27, 20, .74);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 900;
+      z-index: 2;
+      backdrop-filter: blur(10px);
+    }
+
+    .recording-badge.show { display: inline-flex; }
+
+    .rec-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: var(--red);
+      box-shadow: 0 0 0 4px rgba(243, 95, 88, .22);
+    }
+
+    .pose-check {
+      position: absolute;
+      left: 50%;
+      bottom: 14px;
+      transform: translateX(-50%);
+      display: none;
+      align-items: center;
+      border-radius: 999px;
+      padding: 6px 12px;
+      background: rgba(16, 27, 20, .74);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 900;
+      white-space: nowrap;
+      z-index: 2;
+      backdrop-filter: blur(10px);
+    }
+
+    .pose-check.show { display: inline-flex; }
+
+    .pose-check.ok {
+      background: rgba(184, 242, 70, .94);
+      color: #102015;
+    }
+
+    .camera-silhouette {
+      position: absolute;
+      left: 50%;
+      top: 55%;
+      transform: translate(-50%, -50%);
+      height: 60%;
+      pointer-events: none;
+      opacity: .9;
+      transition: opacity .6s ease;
+      z-index: 1;
+    }
+
+    .camera-silhouette.faded {
+      opacity: 0;
+    }
+
+    .camera-guide {
+      position: absolute;
+      inset: 52px 28px 76px;
+      border: 2px dashed rgba(255,255,255,.72);
+      border-radius: 22px;
+      pointer-events: none;
+    }
+
+    .camera-guide::before {
+      content: "HEAD\a\a\a\a\a\a\a\aFEET";
+      white-space: pre;
+      position: absolute;
+      inset: 10px;
+      display: flex;
+      justify-content: center;
+      color: rgba(255,255,255,.72);
+      font-family: var(--font-ui);
+      font-size: 10px;
+      font-weight: 900;
+      line-height: 1;
+      background:
+        linear-gradient(90deg, rgba(184,242,70,.7), rgba(184,242,70,.7)) 50% 12% / 42px 2px no-repeat,
+        linear-gradient(90deg, rgba(184,242,70,.7), rgba(184,242,70,.7)) 50% 88% / 54px 2px no-repeat,
+        linear-gradient(180deg, rgba(255,255,255,.38), transparent 32%, transparent 68%, rgba(255,255,255,.38)) 50% 50% / 1px 100% no-repeat;
+    }
+
+    .camera-guide::after {
+      content: "全身をこの枠に入れる";
+      position: absolute;
+      left: 50%;
+      bottom: -34px;
+      transform: translateX(-50%);
+      white-space: nowrap;
+      color: #fff;
+      background: rgba(16,27,20,.62);
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .camera-controls {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      padding: 0 16px 16px;
+    }
+
+    .quality-card {
+      margin: 0 16px 16px;
+      padding: 13px;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      background: #fff;
+      box-shadow: 0 10px 28px rgba(20,37,23,.06);
+    }
+
+    .quality-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .quality-head b {
+      font-family: var(--font-ui);
+      font-weight: 900;
+      font-size: 15px;
+    }
+
+    .quality-status {
+      border-radius: 999px;
+      padding: 5px 9px;
+      background: #eef8e9;
+      color: #286a20;
+      font-family: var(--font-ui);
+      font-size: 11px;
+      font-weight: 900;
+    }
+
+    .quality-status.warn {
+      background: #fff2dd;
+      color: #9b5700;
+    }
+
+    .quality-list {
+      display: grid;
+      gap: 7px;
+    }
+
+    .quality-item {
+      display: grid;
+      grid-template-columns: 24px 1fr;
+      align-items: start;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+      font-weight: 700;
+    }
+
+    .quality-item i {
+      width: 21px;
+      height: 21px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: var(--soft);
+      color: var(--court);
+      font-style: normal;
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .quality-item.warn i {
+      background: #fff2dd;
+      color: #9b5700;
+    }
+
+    .section {
+      padding: 16px;
+    }
+
+    .section h2 {
+      font-size: 22px;
+      margin: 0 0 8px;
+      letter-spacing: 0;
+      font-family: var(--font-ui);
+      font-weight: 900;
+    }
+
+    .section p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.75;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .analysis-card {
+      margin: 16px;
+      background: #111914;
+      color: #fff;
+      border-radius: 8px;
+      padding: 16px;
+      box-shadow: var(--shadow);
+    }
+
+    .analysis-wrap {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .analysis-scan {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: -18%;
+      height: 18%;
+      background: linear-gradient(180deg, transparent, rgba(184,242,70,.28), transparent);
+      pointer-events: none;
+      animation: scanMove 1.8s ease-in-out infinite;
+    }
+
+    .analysis-hud {
+      position: absolute;
+      left: 12px;
+      right: 12px;
+      bottom: 12px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 7px;
+      pointer-events: none;
+    }
+
+    .analysis-hud span {
+      border-radius: 8px;
+      padding: 8px 7px;
+      color: #fff;
+      background: rgba(16,27,20,.62);
+      backdrop-filter: blur(10px);
+      font-size: 10px;
+      line-height: 1.25;
+      font-weight: 900;
+      text-align: center;
+    }
+
+    .progress-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .progress-head strong {
+      font-size: 22px;
+      font-family: var(--font-ui);
+      font-weight: 900;
+    }
+
+    .progress-number {
+      color: var(--lime);
+      font-size: 30px;
+      font-weight: 900;
+      font-family: var(--font-ui);
+    }
+
+    .progress-track {
+      height: 9px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.12);
+      overflow: hidden;
+      margin-bottom: 14px;
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--lime), #fff266);
+      transition: width .25s ease;
+    }
+
+    .steps {
+      display: grid;
+      gap: 10px;
+    }
+
+    .step {
+      display: grid;
+      grid-template-columns: 28px 1fr;
+      gap: 10px;
+      align-items: center;
+      border-radius: 8px;
+      padding: 11px;
+      background: rgba(255,255,255,.07);
+      color: rgba(255,255,255,.66);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .step i {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      border: 2px solid rgba(255,255,255,.22);
+      display: grid;
+      place-items: center;
+      font-style: normal;
+      font-size: 11px;
+      font-weight: 900;
+    }
+
+    .step.done,
+    .step.active {
+      color: #fff;
+      background: rgba(184,242,70,.12);
+    }
+
+    .step.done i,
+    .step.active i {
+      background: var(--lime);
+      border-color: var(--lime);
+      color: var(--ink);
+    }
+
+    .tips-carousel {
+      margin-top: 12px;
+      border-radius: 8px;
+      padding: 11px 12px;
+      background: rgba(255,255,255,.07);
+    }
+
+    .tips-carousel span {
+      color: var(--lime);
+      font-family: var(--font-ui);
+      font-size: 11px;
+      font-weight: 900;
+    }
+
+    .tips-carousel p {
+      margin: 5px 0 0;
+      color: rgba(255,255,255,.78);
+      font-size: 12px;
+      line-height: 1.6;
+      font-weight: 600;
+      min-height: 38px;
+      transition: opacity .3s ease;
+    }
+
+    .tips-carousel p.swap {
+      opacity: 0;
+    }
+
+    .progress-track.indeterminate .progress-bar {
+      width: 40% !important;
+      animation: indeterminateMove 1.2s ease-in-out infinite;
+    }
+
+    @keyframes indeterminateMove {
+      0% { transform: translateX(-110%); }
+      100% { transform: translateX(360%); }
+    }
+
+    @keyframes scanMove {
+      0% { transform: translateY(0); opacity: .2; }
+      35% { opacity: 1; }
+      100% { transform: translateY(720%); opacity: .25; }
+    }
+
+    .note {
+      margin: 14px 16px 0;
+      padding: 12px;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.65;
+      font-weight: 500;
+    }
+
+    .result-head {
+      background: #111914;
+      color: #fff;
+      padding: 18px 16px 16px;
+    }
+
+    .done-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 30px;
+      border-radius: 999px;
+      padding: 6px 10px;
+      margin-bottom: 13px;
+      color: #102015;
+      background: var(--lime);
+      font-family: var(--font-ui);
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .done-chip::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #102015;
+    }
+
+    .result-focus {
+      margin-top: 14px;
+      display: grid;
+      gap: 8px;
+      padding: 13px;
+      border-radius: 8px;
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.12);
+    }
+
+    .result-focus span {
+      color: rgba(255,255,255,.64);
+      font-size: 11px;
+      font-weight: 900;
+      font-family: var(--font-ui);
+    }
+
+    .result-focus b {
+      color: #fff;
+      font-size: 17px;
+      line-height: 1.35;
+      font-weight: 900;
+    }
+
+    .result-focus small {
+      color: rgba(255,255,255,.72);
+      font-size: 12px;
+      line-height: 1.55;
+      font-weight: 600;
+    }
+
+    .result-summary {
+      display: grid;
+      grid-template-columns: 96px 1fr;
+      gap: 14px;
+      align-items: center;
+    }
+
+    .score {
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: conic-gradient(var(--lime) 0 var(--score, 76%), rgba(255,255,255,.14) var(--score, 76%) 100%);
+      position: relative;
+      font-weight: 900;
+      font-size: 26px;
+      font-family: var(--font-ui);
+    }
+
+    .score::after {
+      content: "";
+      position: absolute;
+      inset: 9px;
+      border-radius: 50%;
+      background: #111914;
+    }
+
+    .score span {
+      position: relative;
+      z-index: 1;
+    }
+
+    .result-summary h1 {
+      margin: 0 0 7px;
+      font-size: 23px;
+      line-height: 1.25;
+      letter-spacing: 0;
+      font-family: var(--font-ui);
+      font-weight: 900;
+    }
+
+    .result-summary p {
+      margin: 0;
+      color: rgba(255,255,255,.72);
+      font-size: 13px;
+      line-height: 1.6;
+      font-weight: 500;
+    }
+
+    .level-band {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+      margin-top: 12px;
+    }
+
+    .level-band span {
+      border-radius: 8px;
+      padding: 7px 4px;
+      background: rgba(255,255,255,.07);
+      color: rgba(255,255,255,.55);
+      font-size: 10px;
+      line-height: 1.4;
+      font-weight: 800;
+      text-align: center;
+      font-family: var(--font-ui);
+    }
+
+    .level-band span.current {
+      background: rgba(184,242,70,.18);
+      color: var(--lime);
+      box-shadow: inset 0 0 0 1px rgba(184,242,70,.55);
+    }
+
+    .score-delta {
+      margin-top: 10px;
+      border-radius: 8px;
+      padding: 10px 12px;
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.12);
+      font-size: 13px;
+      font-weight: 800;
+      font-family: var(--font-ui);
+    }
+
+    .score-delta small {
+      display: block;
+      margin-top: 4px;
+      color: rgba(255,255,255,.66);
+      font-family: var(--font-jp);
+      font-size: 11px;
+      font-weight: 600;
+      line-height: 1.5;
+    }
+
+    .badge-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 14px;
+    }
+
+    .badge {
+      border-radius: 999px;
+      background: rgba(255,255,255,.1);
+      color: rgba(255,255,255,.78);
+      padding: 6px 10px;
+      font-size: 12px;
+      font-weight: 800;
+      font-family: var(--font-ui);
+    }
+
+    .trust-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 7px;
+      margin-top: 12px;
+    }
+
+    .trust-chip {
+      border-radius: 8px;
+      padding: 9px 7px;
+      background: rgba(255,255,255,.08);
+      color: rgba(255,255,255,.72);
+      font-size: 10px;
+      line-height: 1.3;
+      font-weight: 800;
+      text-align: center;
+    }
+
+    .trust-chip b {
+      display: block;
+      color: var(--lime);
+      font-family: var(--font-ui);
+      font-size: 12px;
+      margin-bottom: 3px;
+    }
+
+    .result-body {
+      padding: 14px 16px 106px;
+    }
+
+    .card {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 14px;
+      margin-bottom: 12px;
+      box-shadow: 0 10px 28px rgba(20, 37, 23, .06);
+    }
+
+    .primary-card {
+      border-color: rgba(184,242,70,.55);
+      background:
+        linear-gradient(180deg, rgba(184,242,70,.11), rgba(255,255,255,0) 56%),
+        #fff;
+    }
+
+    .next-action-card {
+      background: #111914;
+      color: #fff;
+      border-color: rgba(255,255,255,.08);
+    }
+
+    .next-action-card p {
+      color: rgba(255,255,255,.72);
+      margin-bottom: 12px;
+    }
+
+    .next-action-card .primary {
+      width: 100%;
+    }
+
+    .share-preview {
+      display: grid;
+      grid-template-columns: 86px 1fr;
+      gap: 12px;
+      align-items: center;
+      margin-top: 12px;
+      padding: 12px;
+      border-radius: 8px;
+      background: #111914;
+      color: #fff;
+    }
+
+    .share-preview-score {
+      width: 76px;
+      height: 76px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: conic-gradient(var(--lime) 0 var(--score, 76%), rgba(255,255,255,.14) var(--score, 76%) 100%);
+      font-family: var(--font-ui);
+      font-size: 24px;
+      font-weight: 900;
+    }
+
+    .share-preview b {
+      display: block;
+      font-size: 14px;
+      line-height: 1.35;
+      margin-bottom: 5px;
+    }
+
+    .share-preview span {
+      color: rgba(255,255,255,.68);
+      font-size: 11px;
+      line-height: 1.45;
+      font-weight: 700;
+    }
+
+    .analysis-shot {
+      margin-top: 10px;
+      border-radius: 8px;
+      overflow: hidden;
+      background: #111914;
+      position: relative;
+      aspect-ratio: 9 / 12;
+    }
+
+    .analysis-shot img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .analysis-shot .empty-video {
+      font-size: 13px;
+    }
+
+    .frame-compare {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 9px;
+      margin-top: 12px;
+    }
+
+    .frame-tile {
+      border-radius: 8px;
+      overflow: hidden;
+      background: #111914;
+      border: 1px solid var(--line);
+    }
+
+    .frame-tile img {
+      width: 100%;
+      aspect-ratio: 9 / 12;
+      object-fit: cover;
+      display: block;
+      background: #111914;
+    }
+
+    .frame-tile b {
+      display: block;
+      padding: 8px 9px 0;
+      font-family: var(--font-ui);
+      font-size: 12px;
+      color: #fff;
+    }
+
+    .frame-tile span {
+      display: block;
+      padding: 3px 9px 9px;
+      color: rgba(255,255,255,.68);
+      font-size: 10px;
+      line-height: 1.35;
+      font-weight: 700;
+    }
+
+    .part-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .part-card {
+      min-height: 92px;
+      border-radius: 8px;
+      padding: 10px;
+      background: var(--soft);
+      border: 1px solid rgba(220,231,218,.8);
+    }
+
+    .part-card b {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 6px;
+      font-family: var(--font-ui);
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .part-card i {
+      font-style: normal;
+      color: #286a20;
+    }
+
+    .part-card.warn i {
+      color: #9b5700;
+    }
+
+    .part-card span {
+      display: block;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.45;
+      font-weight: 700;
+    }
+
+    .card-label {
+      display: inline-flex;
+      min-height: 24px;
+      align-items: center;
+      border-radius: 999px;
+      padding: 4px 9px;
+      font-size: 11px;
+      font-weight: 900;
+      font-family: var(--font-ui);
+      color: #286a20;
+      background: #eef8df;
+      margin-bottom: 9px;
+    }
+
+    .card-label.warn {
+      color: #9b5700;
+      background: #fff2dd;
+    }
+
+    .card h2 {
+      font-size: 19px;
+      margin: 0 0 8px;
+      letter-spacing: 0;
+      font-family: var(--font-ui);
+      font-weight: 900;
+    }
+
+    .card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.72;
+      font-weight: 500;
+    }
+
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .metric {
+      border-radius: 8px;
+      background: var(--soft);
+      padding: 10px 8px;
+      min-height: 74px;
+    }
+
+    .metric strong {
+      display: block;
+      font-size: 20px;
+      margin-bottom: 4px;
+      font-family: var(--font-ui);
+      font-weight: 900;
+    }
+
+    .metric span {
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.35;
+      font-weight: 700;
+    }
+
+    #historyChart {
+      display: block;
+      width: 100%;
+      height: auto;
+      margin-top: 12px;
+      border-radius: 8px;
+      background: var(--soft);
+    }
+
+    .history-row {
+      display: grid;
+      grid-template-columns: 44px 34px 1fr;
+      gap: 8px;
+      align-items: center;
+      padding: 8px 2px;
+      border-bottom: 1px solid var(--line);
+      font-size: 12px;
+    }
+
+    .history-row:last-child { border-bottom: 0; }
+
+    .history-row span {
+      color: var(--muted);
+      font-family: var(--font-ui);
+      font-weight: 800;
+    }
+
+    .history-row b {
+      font-family: var(--font-ui);
+      font-size: 15px;
+      font-weight: 900;
+    }
+
+    .history-row i {
+      font-style: normal;
+      color: var(--muted);
+      font-weight: 600;
+      line-height: 1.4;
+    }
+
+    .bottom-bar {
+      position: fixed;
+      left: 50%;
+      bottom: 0;
+      transform: translateX(-50%);
+      width: min(480px, 100%);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 9px;
+      padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
+      background: rgba(248, 251, 245, .9);
+      border-top: 1px solid rgba(220, 231, 218, .84);
+      backdrop-filter: blur(16px);
+      z-index: 8;
+    }
+
+    .bottom-bar.is-hidden {
+      display: none;
+    }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 88px;
+      transform: translateX(-50%) translateY(18px);
+      width: min(440px, calc(100% - 28px));
+      background: #111914;
+      color: #fff;
+      border-radius: 8px;
+      padding: 12px 14px;
+      font-size: 13px;
+      line-height: 1.55;
+      opacity: 0;
+      pointer-events: none;
+      transition: .25s ease;
+      z-index: 9;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .share-panel {
+      position: fixed;
+      left: 50%;
+      bottom: 0;
+      transform: translateX(-50%) translateY(105%);
+      width: min(480px, 100%);
+      max-height: 88vh;
+      overflow-y: auto;
+      padding: 16px 16px calc(16px + env(safe-area-inset-bottom));
+      border-radius: 12px 12px 0 0;
+      background: #fff;
+      border: 1px solid var(--line);
+      box-shadow: 0 -20px 60px rgba(16, 27, 20, .22);
+      z-index: 13;
+      transition: .25s ease;
+    }
+
+    .share-card-preview {
+      display: block;
+      width: min(220px, 58%);
+      margin: 0 auto 12px;
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+    }
+
+    .share-panel.show {
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .share-panel h2 {
+      margin: 0 0 6px;
+      font-family: var(--font-ui);
+      font-size: 18px;
+      letter-spacing: 0;
+    }
+
+    .share-panel p {
+      margin: 0 0 12px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.6;
+      font-weight: 600;
+    }
+
+    .share-textarea {
+      width: 100%;
+      min-height: 150px;
+      resize: vertical;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px;
+      font: 600 13px/1.65 var(--font-jp);
+      color: var(--ink);
+      background: #f8fbf5;
+    }
+
+    .share-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 9px;
+      margin-top: 12px;
+    }
+
+    .complete-overlay {
+      position: fixed;
+      inset: 0;
+      display: none;
+      place-items: center;
+      padding: 24px;
+      background: rgba(8, 16, 11, .72);
+      backdrop-filter: blur(16px);
+      z-index: 12;
+    }
+
+    .complete-overlay.show {
+      display: grid;
+      animation: fadeIn .18s ease both;
+    }
+
+    .complete-card {
+      width: min(360px, 100%);
+      border-radius: 8px;
+      padding: 24px 20px;
+      text-align: center;
+      color: #fff;
+      background:
+        radial-gradient(circle at 50% 0%, rgba(184,242,70,.32), transparent 42%),
+        #111914;
+      border: 1px solid rgba(255,255,255,.14);
+      box-shadow: 0 24px 60px rgba(0,0,0,.32);
+      transform: scale(.96);
+      animation: popIn .32s ease .03s both;
+    }
+
+    .complete-ring {
+      width: 84px;
+      height: 84px;
+      margin: 0 auto 14px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: conic-gradient(var(--lime), var(--mint), var(--lime));
+      color: #111914;
+      font-family: var(--font-ui);
+      font-size: 38px;
+      font-weight: 900;
+      box-shadow: 0 0 0 10px rgba(184,242,70,.12);
+    }
+
+    .complete-card h2 {
+      margin: 0 0 8px;
+      font-family: var(--font-ui);
+      font-size: 25px;
+      letter-spacing: 0;
+    }
+
+    .complete-card p {
+      margin: 0;
+      color: rgba(255,255,255,.72);
+      font-size: 13px;
+      line-height: 1.65;
+      font-weight: 600;
+    }
+
+    @keyframes popIn {
+      to { transform: scale(1); }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .soon-badge {
+      position: absolute;
+      top: -9px;
+      right: -5px;
+      border-radius: 999px;
+      padding: 3px 7px;
+      background: var(--amber);
+      color: #4a2e00;
+      font-style: normal;
+      font-family: var(--font-jp);
+      font-size: 9px;
+      font-weight: 900;
+      box-shadow: 0 4px 10px rgba(16,27,20,.16);
+      pointer-events: none;
+    }
+
+    .waitlist-overlay {
+      position: fixed;
+      inset: 0;
+      display: none;
+      place-items: center;
+      padding: 24px;
+      background: rgba(8, 16, 11, .6);
+      backdrop-filter: blur(8px);
+      z-index: 14;
+    }
+
+    .waitlist-overlay.show {
+      display: grid;
+      animation: fadeIn .18s ease both;
+    }
+
+    .waitlist-card {
+      width: min(360px, 100%);
+      background: #fff;
+      border-radius: 12px;
+      padding: 20px;
+      border: 1px solid var(--line);
+      box-shadow: 0 24px 60px rgba(0, 0, 0, .28);
+    }
+
+    .waitlist-card h2 {
+      margin: 0 0 8px;
+      font-family: var(--font-ui);
+      font-size: 19px;
+      letter-spacing: 0;
+    }
+
+    .waitlist-card p {
+      margin: 0 0 14px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.65;
+      font-weight: 600;
+    }
+
+    .waitlist-input {
+      width: 100%;
+      min-height: 48px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px 12px;
+      font-size: 14px;
+      background: #f8fbf5;
+      margin-bottom: 10px;
+    }
+
+    .waitlist-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 9px;
+    }
+
+    .rotate-overlay {
+      display: none;
+    }
+
+    @media (orientation: landscape) and (max-height: 500px) and (pointer: coarse) {
+      .rotate-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 20;
+        display: grid;
+        place-items: center;
+        padding: 24px;
+        text-align: center;
+        background: rgba(8, 16, 11, .94);
+        color: #fff;
+      }
+
+      .rotate-overlay b {
+        display: block;
+        font-family: var(--font-ui);
+        font-size: 19px;
+        font-weight: 900;
+        margin-bottom: 8px;
+      }
+
+      .rotate-overlay span {
+        color: rgba(255,255,255,.72);
+        font-size: 13px;
+        line-height: 1.6;
+        font-weight: 600;
+      }
+    }
+
+    .privacy-badge {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+      line-height: 1.4;
+      text-align: center;
+    }
+
+    .privacy-badge.on-dark {
+      color: rgba(255,255,255,.78);
+      padding: 9px 14px;
+      background: #101612;
+      border-top: 1px solid rgba(255,255,255,.08);
+    }
+
+    .hide { display: none !important; }
+
+    @media (min-width: 720px) {
+      body { padding: 24px; }
+      .app {
+        min-height: calc(100vh - 48px);
+        border-radius: 26px;
+        overflow: hidden;
+      }
+      .screen { min-height: calc(100vh - 48px); }
+      .bottom-bar {
+        border-radius: 0 0 26px 26px;
+      }
+    }
+
+    @media (max-width: 390px) {
+      .hero {
+        min-height: 0;
+      }
+
+      .hero-copy {
+        padding-top: 42px;
+      }
+
+      .hero h1 {
+        font-size: 36px;
+      }
+
+      .hero-visual {
+        height: 118px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <section class="screen active" id="screen-capture">
+      <div class="topbar">
+        <div class="brand"><span class="mark"></span><span>Tennis Form AI</span></div>
+        <button class="pill" id="sampleBtn">サンプル結果</button>
+      </div>
+
+      <div class="hero">
+        <div class="court-lines"></div>
+        <div class="hero-copy">
+          <div class="hero-kicker" id="heroKicker">無料β版 / フォアハンド診断</div>
+          <h1>1球撮って、フォームの伸びしろを発見</h1>
+          <p>撮影から診断までスマホの中で完結。AIがフォームを見て「今日の1点」に絞って伸びしろを教えます。</p>
+        </div>
+        <div class="hero-visual" aria-hidden="true">
+          <div class="swing-arc"></div>
+          <div class="ball"></div>
+          <div class="player-card">
+            <div class="mini-score"><strong>76</strong><span>FORM SCORE</span></div>
+            <div class="mini-bars">
+              <div class="mini-bar"><span style="width: 78%"></span></div>
+              <div class="mini-bar"><span style="width: 54%"></span></div>
+              <div class="mini-bar"><span style="width: 68%"></span></div>
+            </div>
+          </div>
+        </div>
+        <div class="first-guide" id="firstGuide">
+          <div class="first-guide-head">
+            <b>はじめての3ステップ</b>
+            <button class="first-guide-close" id="firstGuideClose">OK</button>
+          </div>
+          <div class="first-guide-steps">
+            <span><b>1</b>ショットを選ぶ</span>
+            <span><b>2</b>体の横から縦向き撮影</span>
+            <span><b>3</b>今日の1点を見る</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="quick-flow">
+        <div class="flow-item"><b>01</b><span>体の横側から<br>5〜15秒撮影</span></div>
+        <div class="flow-item"><b>02</b><span>骨格を<br>自動チェック</span></div>
+        <div class="flow-item"><b>03</b><span>今日の1点と<br>ドリルを表示</span></div>
+      </div>
+
+      <div class="capture-actions">
+        <button class="primary" id="openCameraBtn">カメラで撮影する</button>
+        <div class="privacy-badge">🔒 動画は外部に送信されません — すべてスマホの中で解析</div>
+        <button class="secondary" id="pickVideoBtn">撮影済み動画を選ぶ</button>
+        <input class="file-input" id="videoInput" type="file" accept="video/*">
+      </div>
+
+      <div class="shot-selector" aria-label="診断するショットを選択">
+        <button class="shot-option active" data-shot="forehand"><b>フォア</b><span>打点</span></button>
+        <button class="shot-option" data-shot="backhand"><b>バック</b><span>軸</span><i class="soon-badge">近日公開</i></button>
+        <button class="shot-option" data-shot="serve"><b>サーブ</b><span>トス</span><i class="soon-badge">近日公開</i></button>
+      </div>
+
+      <div class="note">
+        カメラが使えない場合は、撮影済み動画を選んでも診断できます。
+      </div>
+    </section>
+
+    <section class="screen" id="screen-camera">
+      <div class="topbar">
+        <button class="pill" data-back="capture">戻る</button>
+        <div class="brand"><span class="mark"></span><span>撮影</span></div>
+        <button class="pill" id="uploadInsteadBtn">動画選択</button>
+      </div>
+
+      <div class="instruction-card">
+        <h2>撮る前に確認</h2>
+        <div class="shoot-guide">
+          <div class="shoot-example good">
+            <svg viewBox="0 0 140 100" aria-hidden="true">
+              <rect width="140" height="100" fill="#75d589"/>
+              <rect y="62" width="140" height="38" fill="#2e8d59"/>
+              <rect x="40" y="6" width="62" height="88" rx="8" fill="none" stroke="#fff" stroke-dasharray="5 4" stroke-width="2"/>
+              <g stroke="#fff" stroke-width="4" stroke-linecap="round" fill="none">
+                <circle cx="70" cy="24" r="7" fill="#fff" stroke="none"/>
+                <line x1="70" y1="31" x2="70" y2="58"/>
+                <line x1="70" y1="40" x2="57" y2="50"/>
+                <line x1="70" y1="40" x2="84" y2="45"/>
+                <line x1="70" y1="58" x2="61" y2="82"/>
+                <line x1="70" y1="58" x2="79" y2="82"/>
+              </g>
+              <line x1="84" y1="45" x2="96" y2="40" stroke="#111914" stroke-width="3" stroke-linecap="round"/>
+              <rect x="8" y="40" width="13" height="22" rx="3" fill="#111914"/>
+              <circle cx="14.5" cy="46" r="3" fill="#87f7c6"/>
+              <circle cx="124" cy="16" r="10" fill="#b8f246"/>
+              <path d="M119 16 l4 4 l7 -8" stroke="#102015" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <b>◎ 良い例</b>
+            <span>体の横側から・縦向き・全身が枠に入る</span>
+          </div>
+          <div class="shoot-example bad">
+            <svg viewBox="0 0 140 100" aria-hidden="true">
+              <rect width="140" height="100" fill="#75d589"/>
+              <rect y="62" width="140" height="38" fill="#2e8d59"/>
+              <rect x="40" y="6" width="62" height="88" rx="8" fill="none" stroke="#fff" stroke-dasharray="5 4" stroke-width="2"/>
+              <g stroke="#fff" stroke-width="5" stroke-linecap="round" fill="none">
+                <circle cx="70" cy="30" r="10" fill="#fff" stroke="none"/>
+                <line x1="70" y1="40" x2="70" y2="76"/>
+                <line x1="70" y1="52" x2="52" y2="62"/>
+                <line x1="70" y1="52" x2="88" y2="62"/>
+                <line x1="70" y1="76" x2="60" y2="100"/>
+                <line x1="70" y1="76" x2="80" y2="100"/>
+              </g>
+              <rect x="63" y="80" width="13" height="20" rx="3" fill="#111914"/>
+              <circle cx="69.5" cy="86" r="3" fill="#f35f58"/>
+              <circle cx="124" cy="16" r="10" fill="#f35f58"/>
+              <path d="M120 12 l8 8 M128 12 l-8 8" stroke="#fff" stroke-width="3" stroke-linecap="round"/>
+            </svg>
+            <b>× 悪い例</b>
+            <span>正面から・近すぎて足元が切れる</span>
+          </div>
+        </div>
+        <p class="shoot-guide-note"><span id="cameraShotGuide">フォアハンドだけを1〜3球撮る</span>(録画は5〜15秒で十分)</p>
+      </div>
+
+      <div class="video-panel">
+        <div class="video-wrap">
+          <video id="cameraPreview" autoplay muted playsinline></video>
+          <svg class="camera-silhouette" id="cameraSilhouette" viewBox="0 0 120 170" aria-hidden="true">
+            <g stroke="rgba(255,255,255,.55)" stroke-width="1.5" fill="rgba(255,255,255,.2)" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="58" cy="20" r="11"/>
+              <path d="M58 32 C 50 34 47 44 47 54 L 46 76 L 70 76 L 69 54 C 69 44 66 34 58 32 Z"/>
+              <path d="M50 38 C 41 44 34 52 31 62 L 36 66 C 40 57 46 50 53 46 Z"/>
+              <path d="M66 37 C 74 41 82 44 90 44 L 90 38 C 84 38 77 35 71 32 Z"/>
+              <path d="M48 76 C 45 92 40 104 36 118 L 32 140 L 39 141 L 45 121 C 48 110 52 98 54 88 Z"/>
+              <path d="M68 76 C 71 92 76 104 80 118 L 84 140 L 77 141 L 71 121 C 68 110 64 98 62 88 Z"/>
+              <path d="M31 140 L 25 143 L 39 143 Z"/>
+              <path d="M85 140 L 91 143 L 77 143 Z"/>
+            </g>
+            <ellipse cx="100" cy="34" rx="8" ry="12" fill="none" stroke="rgba(255,255,255,.55)" stroke-width="2" transform="rotate(18 100 34)"/>
+            <line x1="90" y1="42" x2="95" y2="44" stroke="rgba(255,255,255,.55)" stroke-width="3" stroke-linecap="round"/>
+          </svg>
+          <div class="camera-guide"></div>
+          <div class="recording-badge" id="recordingBadge"><span class="rec-dot"></span><span id="recordingTime">0秒</span></div>
+          <div class="pose-check" id="poseCheckBadge"></div>
+          <div class="empty-video" id="cameraEmpty">カメラを起動しています</div>
+        </div>
+        <div class="selected-meta">
+          <span id="cameraStatus">カメラ準備中</span>
+          <span>体の横側から</span>
+        </div>
+        <div class="privacy-badge on-dark">🔒 動画は外部に送信されません — すべてスマホの中で解析</div>
+      </div>
+
+      <div class="camera-controls">
+        <button class="secondary" id="cancelCameraBtn">キャンセル</button>
+        <button class="primary" id="recordToggleBtn">録画開始</button>
+      </div>
+    </section>
+
+    <section class="screen" id="screen-review">
+      <div class="topbar">
+        <button class="pill" data-back="capture">戻る</button>
+        <div class="brand"><span class="mark"></span><span>動画確認</span></div>
+        <button class="pill" id="changeVideoBtn">変更</button>
+      </div>
+
+      <div class="section">
+        <h2>この動画で解析しますか？</h2>
+        <p id="reviewShotText">全身が入っていて、フォアハンドの動きが見える動画ほど診断が安定します。</p>
+      </div>
+
+      <div class="video-panel">
+        <div class="video-wrap">
+          <video id="sourceVideo" controls playsinline muted></video>
+          <div class="empty-video" id="emptyVideo">動画を選ぶとここに表示されます</div>
+        </div>
+        <div class="selected-meta">
+          <span id="fileName">未選択</span>
+          <span id="fileDuration">長さ確認中</span>
+        </div>
+      </div>
+
+      <div class="section">
+        <button class="primary" id="startAnalysisBtn">AIフォーム診断を開始</button>
+      </div>
+
+      <div class="quality-card" id="qualityCard">
+        <div class="quality-head">
+          <b>撮影品質チェック</b>
+          <span class="quality-status" id="qualityStatus">確認中</span>
+        </div>
+        <div class="quality-list" id="qualityList">
+          <div class="quality-item"><i>✓</i><span>動画を読み込むと、長さ・向き・撮影条件のヒントを表示します。</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="screen" id="screen-analysis">
+      <div class="topbar">
+        <div class="brand"><span class="mark"></span><span>解析中</span></div>
+        <button class="pill" data-back="review">中止</button>
+      </div>
+
+      <div class="video-panel">
+        <div class="video-wrap analysis-wrap">
+          <canvas id="analysisCanvas"></canvas>
+          <canvas class="overlay-canvas" id="poseCanvas"></canvas>
+          <div class="analysis-scan"></div>
+          <div class="analysis-hud">
+            <span>FRAME<br>SCAN</span>
+            <span>BODY<br>LINE</span>
+            <span>COACH<br>TIP</span>
+          </div>
+        </div>
+        <div class="selected-meta">
+          <span id="analysisMode">骨格検出を準備中</span>
+          <span id="frameCount">0 frames</span>
+        </div>
+      </div>
+
+      <div class="analysis-card">
+        <div class="progress-head">
+          <strong>フォームを解析中</strong>
+          <span class="progress-number" id="progressNumber">0%</span>
+        </div>
+        <div class="progress-track" id="progressTrack"><div class="progress-bar" id="progressBar"></div></div>
+        <div class="steps">
+          <div class="step active" id="step1"><i>1</i><span>動画から重要フレームを抽出</span></div>
+          <div class="step" id="step2"><i>2</i><span>肩・腰・膝・手首の位置を確認</span></div>
+          <div class="step" id="step3"><i>3</i><span>打点・姿勢・振り抜きをチェック</span></div>
+          <div class="step" id="step4"><i>4</i><span>今日の改善点とドリルを作成</span></div>
+        </div>
+        <div class="tips-carousel">
+          <span>💡 テニス豆知識</span>
+          <p id="tipText">打点とは？体の前でボールを捉えると力が伝わりやすくなります。</p>
+        </div>
+      </div>
+
+      <div class="note" id="analysisNote">
+        初回はAIモデルの読み込みに少し時間がかかります。
+      </div>
+    </section>
+
+    <section class="screen" id="screen-result">
+      <div class="topbar">
+        <button class="pill" id="resultBackBtn">動画</button>
+        <div class="brand"><span class="mark"></span><span>診断結果</span></div>
+        <button class="pill" id="shareBtn">共有</button>
+      </div>
+
+      <div class="result-head">
+        <div class="done-chip">解析完了</div>
+        <div class="result-summary">
+          <div class="score" id="scoreRing"><span id="scoreValue">76</span></div>
+          <div>
+            <h1 id="mainFinding">今日直すのは打点</h1>
+            <p id="summaryText">体の少し前で捉える意識に絞ると、次の練習で変化が出やすいです。</p>
+          </div>
+        </div>
+        <div class="level-band" id="levelBand">
+          <span>〜50<br>基礎づくり期</span>
+          <span>51〜70<br>安定期</span>
+          <span>71〜85<br>打点調整期</span>
+          <span>86〜<br>完成期</span>
+        </div>
+        <div class="score-delta hide" id="scoreDelta"></div>
+        <div class="badge-row">
+          <span class="badge" id="modeBadge">MediaPipe解析</span>
+          <span class="badge" id="shotBadge">フォアハンド / 体の横側から撮影</span>
+          <span class="badge" id="levelBadge">AI簡易診断</span>
+        </div>
+        <div class="result-focus">
+          <span>今日の改善テーマ</span>
+          <b id="focusTitle">打点を体の少し前に置く</b>
+          <small id="focusBody">次の撮影では、この1点だけ意識して変化を見ます。</small>
+        </div>
+        <div class="trust-row" id="trustRow">
+          <div class="trust-chip"><b id="trustPose"></b>骨格検出</div>
+          <div class="trust-chip"><b id="trustQuality"></b>撮影品質</div>
+          <div class="trust-chip"><b id="trustScope">打点</b>診断範囲</div>
+        </div>
+        <p class="note" id="evidenceText" style="margin: 12px 0 0; background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.12); color: rgba(255,255,255,.76);">動画からフォームの特徴を確認しました。</p>
+      </div>
+
+      <div class="result-body">
+        <div class="card" id="captureCard">
+          <span class="card-label">解析キャプチャ</span>
+          <h2 id="captureTitle">フォームの根拠フレーム</h2>
+          <p id="captureBody">解析に使ったフレームを表示します。骨格が取れた場合は肩・腰・膝などのラインを重ねます。</p>
+          <div class="analysis-shot">
+            <img id="analysisCapture" alt="解析に使ったフォーム画像">
+            <div class="empty-video" id="analysisCaptureEmpty">解析キャプチャは動画診断後に表示されます</div>
+          </div>
+        </div>
+
+        <div class="card primary-card">
+          <span class="card-label warn">最優先</span>
+          <h2 id="priorityTitle">打点が少し体に近い可能性</h2>
+          <p id="priorityBody">インパクト候補の瞬間に、手首と腰の距離が小さめです。体の前に打点を置くと、面が安定して振り抜きやすくなります。</p>
+          <div class="metric-grid" id="metricGrid">
+            <div class="metric"><strong id="metricKnee"></strong><span id="metricKneeLabel">膝の曲がり</span></div>
+            <div class="metric"><strong id="metricReach"></strong><span id="metricReachLabel">打点の余裕</span></div>
+            <div class="metric"><strong id="metricFollow"></strong><span id="metricFollowLabel">振り抜き</span></div>
+          </div>
+        </div>
+
+        <div class="card" id="frameCompareCard">
+          <span class="card-label">フォームのどこを見るか</span>
+          <h2>良かった瞬間 / 改善したい瞬間</h2>
+          <p id="frameCompareText">軸・手首・膝の見え方が違うフレームを並べて表示します。</p>
+          <div class="frame-compare">
+            <div class="frame-tile">
+              <img id="goodFrameImg" alt="良かったフォームのフレーム">
+              <b>良かった点</b>
+              <span id="goodFrameText">軸や準備が安定しているフレームです。</span>
+            </div>
+            <div class="frame-tile">
+              <img id="improveFrameImg" alt="改善したいフォームのフレーム">
+              <b>改善ポイント</b>
+              <span id="improveFrameText">今日の改善テーマが出ているフレームです。</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" id="partsCard">
+          <span class="card-label">部位別チェック</span>
+          <h2>軸・膝・打点・振り抜き</h2>
+          <p>どの部位を見て診断したかを、4つに分けて表示します。</p>
+          <div class="part-grid" id="partGrid"></div>
+        </div>
+
+        <div class="card">
+          <span class="card-label">良かった点</span>
+          <h2 id="goodTitle">準備姿勢は安定しています</h2>
+          <p id="goodBody">撮影範囲の中で体の軸が大きく崩れていません。次は打点だけに集中しましょう。</p>
+        </div>
+
+        <div class="card">
+          <span class="card-label">3分ドリル</span>
+          <h2 id="drillTitle">前打点ストップ素振り</h2>
+          <p id="drillBody">左足の前に仮想ボールを置き、そこで一度ラケットを止めてから振り抜きます。10回を2セット行い、もう一度撮影します。</p>
+        </div>
+
+        <div class="card next-action-card">
+          <span class="card-label">改善ループ</span>
+          <h2>ドリル後にもう一度撮る</h2>
+          <p>同じ角度で撮ると、今日の1点が変わったか見比べやすくなります。</p>
+          <button class="primary" id="retryAfterDrillBtn">このドリルをやって撮影する</button>
+        </div>
+
+        <div class="card">
+          <span class="card-label">共有カード</span>
+          <h2>友人に見せる1枚</h2>
+          <p>結果を共有するときは、スコア・改善点・ドリルだけに絞って伝えます。</p>
+          <div class="share-preview">
+            <div class="share-preview-score" id="sharePreviewScore">76</div>
+            <div>
+              <b id="sharePreviewTitle">今日直すのは打点</b>
+              <span id="sharePreviewBody">前打点ストップ素振りを試して、同じ角度でもう一度撮影。</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card hide" id="historyCard">
+          <span class="card-label">これまでの記録</span>
+          <h2>スコアの推移</h2>
+          <p>同じ角度・同じショットで撮り続けると、変化が見えてきます。</p>
+          <svg id="historyChart" viewBox="0 0 300 96" aria-hidden="true"></svg>
+          <div id="historyList"></div>
+        </div>
+
+        <div class="card">
+          <span class="card-label">コーチ用メモ</span>
+          <p id="coachMemo">この診断はAIによる簡易診断です。※実際の指導はコーチにご相談ください。実際の感覚と照らし合わせながら、次の撮影で変化を確認しましょう。</p>
+        </div>
+      </div>
+    </section>
+
+    <div class="bottom-bar" id="bottomBar">
+      <button class="secondary" id="retakeBtn">撮り直す</button>
+      <button class="primary" id="mainActionBtn">動画を選ぶ</button>
+    </div>
+    <div class="toast" id="toast"></div>
+    <div class="share-panel" id="sharePanel" aria-live="polite">
+      <h2>診断結果を共有</h2>
+      <p>画像カードを保存して、LINEやXでシェアできます。</p>
+      <img class="share-card-preview" id="shareCardPreview" alt="共有用の診断カード">
+      <textarea class="share-textarea hide" id="shareTextArea" readonly></textarea>
+      <div class="share-actions">
+        <button class="primary" id="saveCardBtn">画像を保存</button>
+        <button class="secondary" id="shareImageBtn">画像を共有</button>
+        <button class="secondary" id="shareXBtn">X(Twitter)で共有</button>
+        <button class="secondary" id="shareLineBtn">LINEで送る</button>
+        <button class="ghost" id="copyShareTextBtn">テキストでコピー</button>
+        <button class="ghost" id="closeSharePanelBtn">閉じる</button>
+      </div>
+    </div>
+    <div class="rotate-overlay" aria-hidden="true">
+      <div>
+        <b>📱 スマホを縦向きにしてください</b>
+        <span>縦向きにすると、撮影も診断結果も見やすくなります。</span>
+      </div>
+    </div>
+    <div class="waitlist-overlay" id="waitlistOverlay">
+      <div class="waitlist-card">
+        <h2 id="waitlistTitle">バックハンド診断は近日公開！</h2>
+        <p>公開時にお知らせを受け取りますか？メールアドレスを入力してください。</p>
+        <input class="waitlist-input" id="waitlistEmail" type="email" placeholder="you@example.com" inputmode="email" autocomplete="email">
+        <div class="waitlist-actions">
+          <button class="secondary" id="waitlistCancelBtn">閉じる</button>
+          <button class="primary" id="waitlistSubmitBtn">お知らせを受け取る</button>
+        </div>
+      </div>
+    </div>
+    <div class="complete-overlay" id="completeOverlay" aria-live="polite">
+      <div class="complete-card">
+        <div class="complete-ring">✓</div>
+        <h2>解析完了</h2>
+        <p id="completeText">フォーム診断が出ました</p>
+      </div>
+    </div>
+  </main>
+
+  <script type="module">
+    const $ = (id) => document.getElementById(id);
+    const screens = {
+      capture: $("screen-capture"),
+      camera: $("screen-camera"),
+      review: $("screen-review"),
+      analysis: $("screen-analysis"),
+      result: $("screen-result"),
+    };
+
+    const state = {
+      file: null,
+      fileUrl: "",
+      duration: 0,
+      shotType: "forehand",
+      poseLandmarker: null,
+      usedPose: false,
+      lastResult: null,
+      resultKind: "",
+      lastLandmarks: null,
+      captureDataUrl: "",
+      captureHasPose: false,
+      goodCaptureDataUrl: "",
+      improveCaptureDataUrl: "",
+      bestFrameScore: -Infinity,
+      worstFrameScore: Infinity,
+      partChecks: [],
+      lastQuality: null,
+      poseDetected: 0,
+      poseTotal: 0,
+      cameraStream: null,
+      mediaRecorder: null,
+      recordedChunks: [],
+      recordingStartedAt: 0,
+      recordingTimer: null,
+      wakeLock: null,
+      shareCardCanvas: null,
+      poseTimestamp: 0,
+      poseCheckActive: false,
+      poseCheckTimer: null,
+    };
+
+    const sourceVideo = $("sourceVideo");
+    const cameraPreview = $("cameraPreview");
+    const videoInput = $("videoInput");
+    const analysisCanvas = $("analysisCanvas");
+    const poseCanvas = $("poseCanvas");
+    const analysisCtx = analysisCanvas.getContext("2d");
+    const poseCtx = poseCanvas.getContext("2d");
+
+    $("openCameraBtn").addEventListener("click", openCamera);
+    $("pickVideoBtn").addEventListener("click", () => videoInput.click());
+    $("uploadInsteadBtn").addEventListener("click", () => videoInput.click());
+    $("changeVideoBtn").addEventListener("click", () => videoInput.click());
+    $("mainActionBtn").addEventListener("click", () => {
+      const active = Object.entries(screens).find(([, el]) => el.classList.contains("active"))?.[0];
+      if (active === "capture") openCamera();
+      if (active === "camera") toggleRecording();
+      if (active === "review") startAnalysis();
+      if (active === "result") openCamera();
+    });
+    $("recordToggleBtn").addEventListener("click", toggleRecording);
+    $("cancelCameraBtn").addEventListener("click", () => {
+      stopCamera();
+      showScreen("capture");
+    });
+    $("startAnalysisBtn").addEventListener("click", startAnalysis);
+    $("sampleBtn").addEventListener("click", runSample);
+    $("shareBtn").addEventListener("click", shareResult);
+    $("retryAfterDrillBtn").addEventListener("click", openCamera);
+    $("resultBackBtn").addEventListener("click", () => {
+      if (state.resultKind === "analysis" && state.fileUrl) showScreen("review");
+      else showScreen("capture");
+    });
+    $("firstGuideClose").addEventListener("click", () => {
+      $("firstGuide").classList.add("hide");
+      try { localStorage.setItem("tennisFormGuideSeen", "1"); } catch {}
+    });
+    $("closeSharePanelBtn").addEventListener("click", () => $("sharePanel").classList.remove("show"));
+    $("copyShareTextBtn").addEventListener("click", async () => {
+      const text = makeShareText(state.lastResult || fallbackResult());
+      try {
+        await navigator.clipboard.writeText(text);
+        showToast("診断結果のテキストをコピーしました。");
+      } catch {
+        $("shareTextArea").value = text;
+        $("shareTextArea").classList.remove("hide");
+        $("shareTextArea").focus();
+        $("shareTextArea").select();
+        showToast("コピーできない場合は、文章を長押ししてコピーしてください。");
+      }
+    });
+    document.querySelectorAll(".shot-option").forEach((button) => {
+      button.addEventListener("click", () => {
+        const shot = button.dataset.shot;
+        if (shot !== "forehand") {
+          openWaitlist(shot);
+          return;
+        }
+        state.shotType = shot;
+        try { localStorage.setItem("tennisFormShot", shot); } catch {}
+        updateShotCopy();
+      });
+    });
+
+    let waitlistShot = "backhand";
+    function openWaitlist(shot) {
+      waitlistShot = shot;
+      const label = shot === "serve" ? "サーブ" : "バックハンド";
+      $("waitlistTitle").textContent = `${label}診断は近日公開！`;
+      $("waitlistEmail").value = "";
+      $("waitlistOverlay").classList.add("show");
+    }
+
+    $("waitlistCancelBtn").addEventListener("click", () => $("waitlistOverlay").classList.remove("show"));
+    $("waitlistOverlay").addEventListener("click", (event) => {
+      if (event.target === $("waitlistOverlay")) $("waitlistOverlay").classList.remove("show");
+    });
+    $("waitlistSubmitBtn").addEventListener("click", () => {
+      const email = $("waitlistEmail").value.trim();
+      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        showToast("メールアドレスの形式を確認してください。");
+        return;
+      }
+      let duplicated = false;
+      try {
+        const list = JSON.parse(localStorage.getItem("waitlist") || "[]");
+        duplicated = list.some((row) => row.shot === waitlistShot && row.email === email);
+        if (!duplicated) {
+          list.push({ shot: waitlistShot, email, date: new Date().toISOString() });
+          localStorage.setItem("waitlist", JSON.stringify(list));
+        }
+      } catch {}
+      $("waitlistOverlay").classList.remove("show");
+      showToast(duplicated ? "このメールアドレスは登録済みです。公開までお待ちください！" : "登録ありがとうございます！公開時にお知らせします。");
+    });
+
+    document.querySelectorAll("[data-back]").forEach((button) => {
+      button.addEventListener("click", () => {
+        if (button.dataset.back === "capture") stopCamera();
+        showScreen(button.dataset.back);
+      });
+    });
+
+    videoInput.addEventListener("change", async () => {
+      const file = videoInput.files?.[0];
+      if (!file) return;
+      await setSelectedVideo(file);
+      stopCamera();
+      showScreen("review");
+    });
+
+    function shotConfig() {
+      const configs = {
+        forehand: {
+          label: "フォアハンド",
+          kicker: "無料β版 / フォアハンド診断",
+          guide: "フォアハンドだけを1〜3球撮る",
+          review: "全身が入っていて、フォアハンドの準備・打点・振り抜きが見える動画ほど診断が安定します。",
+          badge: "フォアハンド / 体の横側から撮影",
+          sampleMode: "フォアハンド サンプル",
+          focus: "打点を体の少し前に置く",
+          scope: "打点",
+        },
+      };
+      return configs[state.shotType] || configs.forehand;
+    }
+
+    function updateShotCopy() {
+      const config = shotConfig();
+      $("heroKicker").textContent = config.kicker;
+      $("cameraShotGuide").textContent = config.guide;
+      $("reviewShotText").textContent = config.review;
+      $("shotBadge").textContent = config.badge;
+      document.body.dataset.shot = state.shotType;
+      document.querySelectorAll(".shot-option").forEach((button) => {
+        button.classList.toggle("active", button.dataset.shot === state.shotType);
+      });
+    }
+
+    async function setSelectedVideo(file) {
+      if (state.fileUrl) URL.revokeObjectURL(state.fileUrl);
+      state.file = file;
+      state.fileUrl = URL.createObjectURL(file);
+      state.captureDataUrl = "";
+      state.captureHasPose = false;
+      state.goodCaptureDataUrl = "";
+      state.improveCaptureDataUrl = "";
+      state.bestFrameScore = -Infinity;
+      state.worstFrameScore = Infinity;
+      state.partChecks = [];
+      state.lastQuality = estimateQualityFromMetadata(file);
+      sourceVideo.src = state.fileUrl;
+      $("emptyVideo").classList.add("hide");
+      $("fileName").textContent = file.name.length > 24 ? file.name.slice(0, 21) + "..." : file.name;
+      await waitForMetadata(sourceVideo);
+      state.duration = sourceVideo.duration || 0;
+      $("fileDuration").textContent = state.duration ? Math.round(state.duration) + "秒" : "長さ確認中";
+      state.lastQuality = estimateQualityFromMetadata(file);
+      renderQualityCheck();
+    }
+
+    function estimateQualityFromMetadata(file) {
+      const duration = state.duration || 0;
+      const items = [];
+      let score = 0;
+
+      if (duration >= 5 && duration <= 15) {
+        score += 1;
+        items.push({ ok: true, text: `長さは${Math.round(duration)}秒。診断しやすい範囲です。` });
+      } else if (duration > 15) {
+        items.push({ ok: false, text: `長さは${Math.round(duration)}秒。1〜3球に絞ると重要フレームが見つけやすくなります。` });
+      } else if (duration > 0) {
+        items.push({ ok: false, text: `長さは${Math.round(duration)}秒。5秒以上あるとフォームの流れを見やすいです。` });
+      } else {
+        items.push({ ok: false, text: "動画の長さを確認できませんでした。解析は続けられます。" });
+      }
+
+      if ((sourceVideo.videoHeight || 0) >= (sourceVideo.videoWidth || 0)) {
+        score += 1;
+        items.push({ ok: true, text: "縦向き動画です。全身を入れやすい撮り方です。" });
+      } else {
+        items.push({ ok: false, text: "横向き動画です。次回はスマホを縦向きにすると全身が入りやすいです。" });
+      }
+
+      if (file?.size && file.size > 40000) {
+        score += 1;
+        items.push({ ok: true, text: "動画データを確認できました。解析に進めます。" });
+      } else {
+        items.push({ ok: false, text: "動画データが小さめです。撮影に失敗していないか確認してください。" });
+      }
+
+      const label = score >= 3 ? "良好" : score === 2 ? "診断OK" : "撮り直し推奨";
+      return { score, label, items };
+    }
+
+    function renderQualityCheck() {
+      const q = state.lastQuality || { score: 0, label: "確認中", items: [] };
+      $("qualityStatus").textContent = q.label;
+      $("qualityStatus").classList.toggle("warn", q.score < 2);
+      $("qualityList").innerHTML = q.items.map((item) => (
+        `<div class="quality-item ${item.ok ? "" : "warn"}"><i>${item.ok ? "✓" : "!"}</i><span>${item.text}</span></div>`
+      )).join("");
+    }
+
+    async function openCamera() {
+      showScreen("camera");
+      $("cameraEmpty").classList.remove("hide");
+      $("cameraStatus").textContent = "カメラ準備中";
+      $("recordToggleBtn").textContent = "録画開始";
+      $("recordingBadge").classList.remove("show");
+      $("cameraSilhouette").classList.remove("faded");
+
+      if (!navigator.mediaDevices?.getUserMedia) {
+        showToast("このブラウザでは直接撮影が使えません。撮影済み動画を選んでください。");
+        videoInput.click();
+        return;
+      }
+
+      try {
+        stopCamera();
+        const constraints = {
+          audio: false,
+          video: {
+            facingMode: { ideal: "environment" },
+            width: { ideal: 1080 },
+            height: { ideal: 1920 },
+            aspectRatio: { ideal: 9 / 16 },
+          },
+        };
+        state.cameraStream = await navigator.mediaDevices.getUserMedia(constraints);
+        await normalizeCameraZoom(state.cameraStream);
+        cameraPreview.srcObject = state.cameraStream;
+        await cameraPreview.play();
+        $("cameraEmpty").classList.add("hide");
+        $("cameraStatus").textContent = "通常倍率で全身を枠に入れて録画開始";
+        startPoseCheck();
+      } catch (error) {
+        console.error(error);
+        $("cameraStatus").textContent = "カメラを起動できません";
+        showToast("カメラ許可が必要です。難しければ「動画選択」から撮影済み動画を使ってください。");
+      }
+    }
+
+    async function normalizeCameraZoom(stream) {
+      const track = stream?.getVideoTracks?.()[0];
+      if (!track?.getCapabilities || !track?.applyConstraints) return;
+      try {
+        const capabilities = track.getCapabilities();
+        if (capabilities.zoom) {
+          const zoom = Math.max(1, capabilities.zoom.min || 1);
+          await track.applyConstraints({ advanced: [{ zoom }] });
+        }
+      } catch (error) {
+        console.warn("Camera zoom normalization skipped", error);
+      }
+    }
+
+    function toggleRecording() {
+      if (state.mediaRecorder?.state === "recording") {
+        stopRecording();
+      } else {
+        startRecording();
+      }
+    }
+
+    function startRecording() {
+      if (!state.cameraStream) {
+        showToast("カメラがまだ起動していません。");
+        return;
+      }
+      const mimeType = pickMimeType();
+      try {
+        state.recordedChunks = [];
+        state.mediaRecorder = new MediaRecorder(state.cameraStream, mimeType ? { mimeType } : undefined);
+        state.mediaRecorder.ondataavailable = (event) => {
+          if (event.data && event.data.size > 0) state.recordedChunks.push(event.data);
+        };
+        state.mediaRecorder.onstop = createVideoFromRecording;
+        state.mediaRecorder.start(250);
+        state.recordingStartedAt = Date.now();
+        stopPoseCheck();
+        try { navigator.vibrate?.(50); } catch {}
+        requestWakeLock();
+        $("recordToggleBtn").textContent = "録画停止";
+        $("mainActionBtn").textContent = "録画停止";
+        $("cameraStatus").textContent = "録画中。1〜3球打ったら停止";
+        $("recordingBadge").classList.add("show");
+        $("cameraSilhouette").classList.add("faded");
+        updateRecordingTime();
+        state.recordingTimer = setInterval(updateRecordingTime, 500);
+      } catch (error) {
+        console.error(error);
+        showToast("このブラウザでは録画を開始できません。撮影済み動画を選んでください。");
+      }
+    }
+
+    function isFullBody(lm) {
+      if (!lm) return false;
+      const inFrame = (p) => p && (p.visibility == null || p.visibility > .5)
+        && p.x > 0.02 && p.x < 0.98 && p.y > 0.02 && p.y < 0.98;
+      return [0, 27, 28].every((i) => inFrame(lm[i]));
+    }
+
+    function updatePoseCheckBadge(ok) {
+      const badge = $("poseCheckBadge");
+      badge.classList.add("show");
+      badge.classList.toggle("ok", ok);
+      badge.textContent = ok ? "✓ 全身が写っています" : "全身を枠に入れてください";
+    }
+
+    async function startPoseCheck() {
+      stopPoseCheck();
+      state.poseCheckActive = true;
+      const pose = await getPoseLandmarker();
+      if (!pose || !state.poseCheckActive || !state.cameraStream) return;
+      const tick = () => {
+        if (!state.poseCheckActive || !state.cameraStream) return;
+        if (cameraPreview.readyState >= 2 && cameraPreview.videoWidth) {
+          try {
+            state.poseTimestamp = Math.max(performance.now(), state.poseTimestamp + 1);
+            const detection = pose.detectForVideo(cameraPreview, state.poseTimestamp);
+            updatePoseCheckBadge(isFullBody(detection.landmarks?.[0] || null));
+          } catch {}
+        }
+        state.poseCheckTimer = setTimeout(tick, 500);
+      };
+      tick();
+    }
+
+    function stopPoseCheck() {
+      state.poseCheckActive = false;
+      clearTimeout(state.poseCheckTimer);
+      state.poseCheckTimer = null;
+      $("poseCheckBadge").classList.remove("show", "ok");
+    }
+
+    async function requestWakeLock() {
+      try {
+        state.wakeLock = await navigator.wakeLock?.request("screen");
+      } catch {}
+    }
+
+    function releaseWakeLock() {
+      try { state.wakeLock?.release(); } catch {}
+      state.wakeLock = null;
+    }
+
+    function stopRecording() {
+      if (state.mediaRecorder?.state === "recording") state.mediaRecorder.stop();
+      clearInterval(state.recordingTimer);
+      try { navigator.vibrate?.(50); } catch {}
+      releaseWakeLock();
+      $("recordToggleBtn").textContent = "録画開始";
+      $("mainActionBtn").textContent = "録画開始";
+      $("cameraStatus").textContent = "録画を保存しています";
+      $("recordingBadge").classList.remove("show");
+    }
+
+    async function createVideoFromRecording() {
+      const type = state.mediaRecorder?.mimeType || "video/webm";
+      const blob = new Blob(state.recordedChunks, { type });
+      if (!blob.size) {
+        showToast("録画データが作れませんでした。もう一度撮影してください。");
+        return;
+      }
+      const extension = type.includes("mp4") ? "mp4" : "webm";
+      const file = new File([blob], `tennis-form-${Date.now()}.${extension}`, { type });
+      await setSelectedVideo(file);
+      stopCamera();
+      showScreen("review");
+    }
+
+    function stopCamera() {
+      if (state.mediaRecorder?.state === "recording") {
+        try {
+          state.mediaRecorder.onstop = null;
+          state.mediaRecorder.stop();
+        } catch {}
+      }
+      clearInterval(state.recordingTimer);
+      stopPoseCheck();
+      releaseWakeLock();
+      state.cameraStream?.getTracks().forEach((track) => track.stop());
+      state.cameraStream = null;
+      if (cameraPreview) {
+        cameraPreview.srcObject = null;
+      }
+    }
+
+    function updateRecordingTime() {
+      const seconds = Math.max(0, Math.round((Date.now() - state.recordingStartedAt) / 1000));
+      const remaining = Math.max(0, 15 - seconds);
+      $("recordingTime").textContent = `残り${remaining}秒`;
+      if (remaining <= 0 && state.mediaRecorder?.state === "recording") {
+        stopRecording();
+        showToast("15秒で自動停止しました。短い動画の方が解析しやすいです。");
+      }
+    }
+
+    function pickMimeType() {
+      const types = ["video/webm;codecs=vp9", "video/webm;codecs=vp8", "video/webm", "video/mp4"];
+      return types.find((type) => window.MediaRecorder && MediaRecorder.isTypeSupported(type)) || "";
+    }
+
+    const analysisTips = [
+      "打点とは？体の前でボールを捉えると力が伝わりやすくなります。",
+      "膝を曲げると下半身の力がスイングに乗ります。",
+      "プロは1つの改善に数週間かけます。焦らず1点ずつ。",
+      "振り抜きが大きいと、ラケット面が安定して回転もかけやすくなります。",
+      "同じ角度で撮り続けると、小さな変化にも気づきやすくなります。",
+      "早めに肩を入れる「準備」は、多くのミスを減らす土台になります。",
+      "頭の位置を動かさないと、体の軸が安定してミスが減ります。",
+    ];
+    let tipIndex = 0;
+    let tipTimer = null;
+
+    function startTips() {
+      stopTips();
+      tipIndex = Math.floor(Math.random() * analysisTips.length);
+      $("tipText").textContent = analysisTips[tipIndex];
+      tipTimer = setInterval(() => {
+        tipIndex = (tipIndex + 1) % analysisTips.length;
+        const el = $("tipText");
+        el.classList.add("swap");
+        setTimeout(() => {
+          el.textContent = analysisTips[tipIndex];
+          el.classList.remove("swap");
+        }, 300);
+      }, 4000);
+    }
+
+    function stopTips() {
+      clearInterval(tipTimer);
+      tipTimer = null;
+    }
+
+    function setIndeterminate(on) {
+      $("progressTrack").classList.toggle("indeterminate", on);
+      if (on) $("progressNumber").textContent = "準備中";
+    }
+
+    function showScreen(name) {
+      Object.entries(screens).forEach(([key, el]) => el.classList.toggle("active", key === name));
+      if (name === "analysis") startTips();
+      else stopTips();
+      const main = $("mainActionBtn");
+      const retake = $("retakeBtn");
+      $("bottomBar").classList.toggle("is-hidden", ["capture", "camera", "analysis"].includes(name));
+      if (name === "capture") {
+        main.textContent = "カメラで撮影する";
+        retake.textContent = "サンプル結果";
+        retake.onclick = runSample;
+      } else if (name === "camera") {
+        main.textContent = state.mediaRecorder?.state === "recording" ? "録画停止" : "録画開始";
+        retake.textContent = "動画選択";
+        retake.onclick = () => videoInput.click();
+      } else if (name === "review") {
+        main.textContent = "診断開始";
+        retake.textContent = "撮り直す";
+        retake.onclick = openCamera;
+      } else if (name === "analysis") {
+        main.textContent = "解析中";
+        retake.textContent = "中止";
+        retake.onclick = () => showScreen("review");
+      } else {
+        $("resultBackBtn").textContent = state.resultKind === "analysis" && state.fileUrl ? "動画" : "ホーム";
+        main.textContent = "別の動画を撮る";
+        retake.textContent = "撮り直す";
+        retake.onclick = openCamera;
+      }
+    }
+
+    async function startAnalysis() {
+      if (!state.fileUrl) {
+        showToast("先に動画を選んでください。");
+        return;
+      }
+      showScreen("analysis");
+      resetProgress();
+      state.usedPose = false;
+      state.poseDetected = 0;
+      state.poseTotal = 0;
+      state.goodCaptureDataUrl = "";
+      state.improveCaptureDataUrl = "";
+      state.bestFrameScore = -Infinity;
+      state.worstFrameScore = Infinity;
+      state.partChecks = [];
+      try {
+        const result = await analyzeVideo();
+        state.lastResult = result;
+        state.resultKind = "analysis";
+        renderResult(result);
+        await showCompletion(result);
+        showScreen("result");
+      } catch (error) {
+        console.error(error);
+        const result = fallbackResult("動画解析で一部エラーが出たため、簡易診断で表示しています。");
+        state.lastResult = result;
+        state.resultKind = "analysis";
+        renderResult(result);
+        await showCompletion(result);
+        showScreen("result");
+      }
+    }
+
+    async function analyzeVideo() {
+      setProgress(8, 1, "動画を読み込んでいます");
+      await waitForMetadata(sourceVideo);
+      const width = sourceVideo.videoWidth || 720;
+      const height = sourceVideo.videoHeight || 960;
+      fitCanvas(analysisCanvas, width, height);
+      fitCanvas(poseCanvas, width, height);
+
+      setProgress(18, 1, "骨格検出モデルを確認中");
+      setIndeterminate(true);
+      const pose = await getPoseLandmarker();
+      setIndeterminate(false);
+      setProgress(20, 1, "解析を開始しています");
+      const samples = sampleTimes(sourceVideo.duration || 8, 10);
+      state.poseTotal = samples.length;
+      const measurements = [];
+      const frameStats = [];
+      let previousFrameStats = null;
+      let detected = 0;
+
+      for (let i = 0; i < samples.length; i++) {
+        setProgress(20 + Math.round((i / samples.length) * 48), i < 4 ? 2 : 3, "重要フレームを解析中");
+        await seekVideo(sourceVideo, samples[i]);
+        analysisCtx.drawImage(sourceVideo, 0, 0, analysisCanvas.width, analysisCanvas.height);
+        const visualStats = measureFrame(analysisCtx, analysisCanvas.width, analysisCanvas.height, previousFrameStats);
+        frameStats.push(visualStats);
+        previousFrameStats = visualStats;
+        let landmarks = null;
+        if (pose) {
+          state.poseTimestamp = Math.max(performance.now(), state.poseTimestamp + 1);
+          const detection = pose.detectForVideo(sourceVideo, state.poseTimestamp);
+          landmarks = detection.landmarks?.[0] || null;
+        }
+        if (landmarks) {
+          detected++;
+          state.poseDetected = detected;
+          state.lastLandmarks = landmarks;
+          const measurement = measurePose(landmarks);
+          measurements.push(measurement);
+          drawPose(landmarks);
+          saveAnalysisCapture(true, measurement);
+        } else {
+          saveAnalysisCapture(false);
+        }
+        $("frameCount").textContent = `${i + 1}/${samples.length} frames`;
+        await wait(70);
+      }
+
+      setProgress(78, 3, "フォーム指標を集計中");
+      await wait(300);
+      if (!measurements.length) {
+        const visual = aggregateFrameStats(frameStats);
+        state.poseDetected = detected;
+        const result = buildVisualDiagnosis(visual, "骨格ポイントを十分に検出できなかったため、映像の明るさ・動き量・長さをもとに診断しています。");
+        return result;
+      }
+
+      state.usedPose = true;
+      state.poseDetected = detected;
+      $("analysisMode").textContent = `MediaPipe解析 ${detected}/${samples.length}`;
+      const aggregate = aggregateMeasurements(measurements);
+
+      setProgress(92, 4, "改善コメントを作成中");
+      await wait(450);
+      setProgress(100, 4, "診断完了");
+      await wait(350);
+      const visual = aggregateFrameStats(frameStats);
+      return buildDiagnosis(aggregate, detected, samples.length, visual);
+    }
+
+    async function getPoseLandmarker() {
+      if (state.poseLandmarker) return state.poseLandmarker;
+      try {
+        $("analysisMode").textContent = "MediaPipeを読み込み中";
+        const vision = await import("https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14");
+        const fileset = await vision.FilesetResolver.forVisionTasks("https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/wasm");
+        state.poseLandmarker = await vision.PoseLandmarker.createFromOptions(fileset, {
+          baseOptions: {
+            modelAssetPath: "https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/latest/pose_landmarker_lite.task",
+            delegate: "GPU",
+          },
+          runningMode: "VIDEO",
+          numPoses: 1,
+        });
+        $("analysisMode").textContent = "MediaPipe解析";
+        return state.poseLandmarker;
+      } catch (error) {
+        console.warn("Pose model unavailable", error);
+        $("analysisMode").textContent = "簡易診断";
+        $("analysisNote").textContent = "MediaPipeを読み込めなかったため、今回は簡易診断で表示します。ネット接続がある環境で再度試してください。";
+        return null;
+      }
+    }
+
+    function measureFrame(ctx, width, height, previous) {
+      const data = ctx.getImageData(0, 0, width, height).data;
+      const lumas = [];
+      let brightness = 0;
+      let greenPixels = 0;
+      let samples = 0;
+      const stepX = Math.max(12, Math.floor(width / 28));
+      const stepY = Math.max(12, Math.floor(height / 36));
+
+      for (let y = 0; y < height; y += stepY) {
+        for (let x = 0; x < width; x += stepX) {
+          const index = (y * width + x) * 4;
+          const r = data[index];
+          const g = data[index + 1];
+          const b = data[index + 2];
+          const lum = r * 0.299 + g * 0.587 + b * 0.114;
+          lumas.push(lum);
+          brightness += lum;
+          if (g > r * 1.08 && g > b * 1.08) greenPixels++;
+          samples++;
+        }
+      }
+
+      let motion = 0;
+      if (previous?.lumas?.length === lumas.length) {
+        for (let i = 0; i < lumas.length; i++) motion += Math.abs(lumas[i] - previous.lumas[i]);
+        motion = motion / lumas.length;
+      }
+
+      return {
+        brightness: samples ? brightness / samples : 0,
+        greenRatio: samples ? greenPixels / samples : 0,
+        motion,
+        lumas,
+      };
+    }
+
+    function aggregateFrameStats(rows) {
+      const brightness = average(rows.map((row) => row.brightness));
+      const motion = average(rows.slice(1).map((row) => row.motion));
+      const greenRatio = average(rows.map((row) => row.greenRatio));
+      return {
+        brightness,
+        motion,
+        greenRatio,
+        duration: state.duration || 0,
+        frames: rows.length,
+      };
+    }
+
+    function buildVisualDiagnosis(v, reason) {
+      let score = 68;
+      let priority = {
+        title: "体の横側から全身をもう少し大きく撮ると安定します",
+        body: "骨格検出が十分に取れなかったため、まずは撮影条件を整えるのが一番効果的です。頭・足・ラケットが枠内に入る距離で撮り直してみてください。",
+        drill: "縦向き固定チェック",
+        drillBody: "スマホを縦向きで固定し、素振りを1回しても頭・足・ラケットが画面から出ないか確認してから録画します。",
+      };
+      let good = { title: "動画の読み込みはできています", body: "この動画から映像の明るさ・動き量・長さを確認できました。" };
+
+      if (v.brightness < 58) {
+        score -= 8;
+        priority = {
+          title: "映像が少し暗く、骨格を拾いにくいです",
+          body: "明るさが足りないと、肩・肘・膝の位置が安定して取れません。屋外の明るい場所や照明の下で撮ると診断が安定します。",
+          drill: "明るい場所で再撮影",
+          drillBody: "同じ位置から、逆光を避けて5〜10秒だけ撮影します。体の輪郭がはっきり見えるか確認してください。",
+        };
+      } else if (v.motion < 6) {
+        score -= 6;
+        priority = {
+          title: "動きが少なく、打球フォームを判定しづらいです",
+          body: "動画内の動き量が小さめです。フォアハンドを1〜3球、テイクバックから振り抜きまで入れると診断が変わりやすくなります。",
+          drill: "1球だけ大きく撮る",
+          drillBody: "テイクバック、インパクト、フォローが入るように1球だけゆっくり大きめに打って撮影します。",
+        };
+      } else if (v.duration > 18) {
+        score -= 4;
+        priority = {
+          title: "動画が長めです。1〜3球に絞ると見やすくなります",
+          body: "長い動画では重要フレームが散りやすくなります。5〜15秒にすると、フォームの変化を見つけやすくなります。",
+          drill: "10秒ショート撮影",
+          drillBody: "構えからフォローまでが入る1〜3球だけを撮影します。",
+        };
+      } else {
+        score += 8;
+        good = { title: "映像条件は良い傾向です", body: "明るさと動き量があり、フォームを確認しやすい動画です。" };
+        priority = {
+          title: "次は体の横側から全身をさらに安定させましょう",
+          body: "映像条件は悪くありません。骨格検出を安定させるには、スマホを固定して頭・足・ラケットが枠から出ないように撮るのが次の一手です。",
+          drill: "固定して1球撮影",
+          drillBody: "スマホを地面やベンチに固定し、フォアハンド1球だけを5〜10秒で撮ります。",
+        };
+      }
+
+      score = clamp(score, 50, 86);
+      const result = {
+        mode: "無料ブラウザ解析",
+        score,
+        mainFinding: "撮影条件から診断しました",
+        summary: reason,
+        priority,
+        good,
+        drillTitle: priority.drill,
+        drillBody: priority.drillBody,
+        metrics: {
+          knee: Math.round(v.brightness),
+          reach: Math.round(v.motion),
+          follow: Math.round(v.duration) + "秒",
+          kneeLabel: "明るさ",
+          reachLabel: "動き量",
+          followLabel: "動画の長さ",
+        },
+        evidence: `動画 ${v.frames} フレームを確認。明るさ ${Math.round(v.brightness)}、動き量 ${Math.round(v.motion)}、長さ ${Math.round(v.duration)}秒をもとに結果を変えています。`,
+        coachMemo: "MediaPipeの骨格検出が十分に取れない場合でも、無料ブラウザ解析で動画ごとに診断が変わります。",
+        parts: [
+          { label: "撮影", status: v.brightness >= 58 ? "良好" : "要改善", body: v.brightness >= 58 ? "体の輪郭は見えやすい明るさです。" : "少し暗いため、姿勢の線が取りにくいです。", warn: v.brightness < 58 },
+          { label: "動き", status: v.motion >= 6 ? "確認OK" : "少なめ", body: v.motion >= 6 ? "スイングの動き量は確認できています。" : "フォーム変化が少なく、場面特定が弱くなります。", warn: v.motion < 6 },
+          { label: "長さ", status: v.duration <= 15 ? "適正" : "長め", body: v.duration <= 15 ? "1〜3球の確認に向いた長さです。" : "短く撮ると診断箇所が絞りやすいです。", warn: v.duration > 15 },
+          { label: "角度", status: "横から", body: "次回も体の横側から撮ると比較しやすくなります。", warn: false },
+        ],
+      };
+      return adaptDiagnosisForShot(result, null, v);
+    }
+
+    function measurePose(lm) {
+      const leftKnee = angle(lm[23], lm[25], lm[27]);
+      const rightKnee = angle(lm[24], lm[26], lm[28]);
+      const kneeAngle = average([leftKnee, rightKnee]);
+      const leftWristHip = distance(lm[15], lm[23]);
+      const rightWristHip = distance(lm[16], lm[24]);
+      const reach = Math.max(leftWristHip, rightWristHip);
+      const leftWristShoulderY = lm[15].y - lm[11].y;
+      const rightWristShoulderY = lm[16].y - lm[12].y;
+      const follow = Math.min(leftWristShoulderY, rightWristShoulderY);
+      const shoulderWidth = distance(lm[11], lm[12]);
+      const hipWidth = distance(lm[23], lm[24]);
+      const stance = distance(lm[27], lm[28]);
+      const center = Math.abs(((lm[11].x + lm[12].x + lm[23].x + lm[24].x) / 4) - ((lm[27].x + lm[28].x) / 2));
+      return { kneeAngle, reach, follow, shoulderWidth, hipWidth, stance, center };
+    }
+
+    function aggregateMeasurements(rows) {
+      const pick = (key) => rows.map((row) => row[key]).filter(Number.isFinite);
+      return {
+        kneeAngle: median(pick("kneeAngle")),
+        reach: percentile(pick("reach"), 70),
+        follow: percentile(pick("follow"), 20),
+        shoulderWidth: median(pick("shoulderWidth")),
+        hipWidth: median(pick("hipWidth")),
+        stance: median(pick("stance")),
+        center: median(pick("center")),
+      };
+    }
+
+    function buildPartChecks(m) {
+      return [
+        {
+          label: "軸",
+          status: m.center > 0.12 ? "流れ気味" : "安定",
+          body: m.center > 0.12 ? "肩・腰の中心が足元から少し外れています。" : "肩・腰の中心が足元に残っています。",
+          warn: m.center > 0.12,
+        },
+        {
+          label: "膝",
+          status: m.kneeAngle > 162 ? "伸び気味" : "良い土台",
+          body: m.kneeAngle > 162 ? "打つ前後で膝が伸び、下半身のためが少なめです。" : "膝が伸び切らず、構えの土台を作れています。",
+          warn: m.kneeAngle > 162,
+        },
+        {
+          label: "打点",
+          status: m.reach < 0.34 ? "近い" : "余裕あり",
+          body: m.reach < 0.34 ? "手首と腰の距離が近く、体に詰まりやすい状態です。" : "手首が体から離れていて、窮屈さは少なめです。",
+          warn: m.reach < 0.34,
+        },
+        {
+          label: "振り抜き",
+          status: m.follow > 0.02 ? "小さめ" : "良い",
+          body: m.follow > 0.02 ? "フォローで手が上がり切らず、振り抜きが小さく見えます。" : "手が肩の高さまで出て、スイングが止まりにくい状態です。",
+          warn: m.follow > 0.02,
+        },
+      ];
+    }
+
+    function buildDiagnosis(m, detected, total, visual) {
+      let score = 74;
+      const issues = [];
+      const goods = [];
+
+      if (m.kneeAngle > 162) {
+        score -= 8;
+        issues.push({
+          key: "knee",
+          title: "下半身が少し伸び気味です",
+          body: "膝の角度が大きく、インパクト前後で沈み込みが少ない可能性があります。軽く膝をゆるめると、体重移動を使いやすくなります。",
+          drill: "膝ゆるめ素振り",
+          drillBody: "構えた状態で膝を少し曲げ、打つ瞬間まで高さを変えすぎない素振りを10回行います。",
+        });
+      } else {
+        score += 6;
+        goods.push({ title: "下半身の準備は良好です", body: "膝が伸び切らず、打つ前の土台が作れています。" });
+      }
+
+      if (m.reach < 0.34) {
+        score -= 10;
+        issues.push({
+          key: "reach",
+          title: "打点が体に近い可能性があります",
+          body: "手首と腰の距離が小さめです。体の少し前で捉える意識を持つと、ラケット面が安定しやすくなります。",
+          drill: "前打点ストップ素振り",
+          drillBody: "左足の前に仮想ボールを置き、そこで一度ラケットを止めてから振り抜きます。10回を2セット行います。",
+        });
+      } else {
+        score += 5;
+        goods.push({ title: "腕の出し方は良い傾向です", body: "体から手が離れており、窮屈になりすぎずにスイングできています。" });
+      }
+
+      if (m.follow > 0.02) {
+        score -= 6;
+        issues.push({
+          key: "follow",
+          title: "振り抜きが小さく見えます",
+          body: "終盤で手首が肩より上に出ているフレームが少なめです。打ったあとにラケットを前へ長く出す意識が合いそうです。",
+          drill: "肩上フィニッシュ確認",
+          drillBody: "打ったあとにラケットが肩の高さを越える位置で止めます。ゆっくり5回、通常スピードで10回行います。",
+        });
+      } else {
+        score += 4;
+        goods.push({ title: "振り抜きは良い傾向です", body: "フォローで手が高い位置まで出ており、スイングが途中で止まりにくい状態です。" });
+      }
+
+      if (m.center > 0.12) {
+        score -= 4;
+        issues.push({
+          key: "balance",
+          title: "体の軸が左右に流れています",
+          body: "肩・腰の中心が足元の中心から少し外れているフレームがあります。打ったあとも頭の位置を残す意識が有効です。",
+          drill: "軸残しフィニッシュ",
+          drillBody: "打ったあと2秒止まり、頭と胸が前に流れすぎていないか確認します。",
+        });
+      } else {
+        score += 3;
+        goods.push({ title: "体の軸は安定しています", body: "足元に対して上半身の中心が大きく外れていません。" });
+      }
+
+      const priority = issues[0] || {
+        title: "全体は良好です。次は打点を前に",
+        body: "大きな崩れは見つかりませんでした。より安定させるなら、体の少し前で捉える練習から始めるのがおすすめです。",
+        drill: "前打点ストップ素振り",
+        drillBody: "左足の前に仮想ボールを置き、そこで一度ラケットを止めてから振り抜きます。",
+      };
+      const good = goods[0] || { title: "撮影条件は確認できました", body: "全身の動きが見える動画として解析できています。" };
+
+      score = clamp(score, 52, 94);
+      const result = {
+        mode: "MediaPipe解析",
+        score,
+        mainFinding: priority.title.includes("打点") ? "今日直すのは打点" : "今日直すのは" + shortLabel(priority.title),
+        summary: "まずは1つだけ意識して、次の動画で変化を見ましょう。",
+        priority,
+        good,
+        drillTitle: priority.drill,
+        drillBody: priority.drillBody,
+        metrics: {
+          knee: Number.isFinite(m.kneeAngle) ? Math.round(m.kneeAngle) + "°" : null,
+          reach: Number.isFinite(m.reach) ? Math.round(m.reach * 100) + "%" : null,
+          follow: Number.isFinite(m.follow) ? (m.follow <= 0.02 ? "良" : "小") : null,
+          kneeLabel: "膝の曲がり",
+          reachLabel: "打点の余裕",
+          followLabel: "振り抜き",
+        },
+        evidence: `MediaPipe APIで骨格を ${detected}/${total} フレーム検出。明るさ ${Math.round(visual?.brightness || 0)}、動き量 ${Math.round(visual?.motion || 0)} も確認しました。`,
+        coachMemo: `骨格検出 ${detected}/${total} フレーム。※簡易診断のため、実際の指導はコーチにご相談ください。`,
+        parts: buildPartChecks(m),
+      };
+      return adaptDiagnosisForShot(result, m, visual);
+    }
+
+    function adaptDiagnosisForShot(result) {
+      const config = shotConfig();
+      result.evidence = `${config.label}として解析。` + (result.evidence || "");
+      result.coachMemo = result.coachMemo || "フォアハンド診断(β版)では、準備・打点の余裕・膝・振り抜きを中心に簡易診断しています。";
+      return result;
+    }
+
+    function fallbackResult(reason) {
+      const patterns = [
+        {
+          title: "打点が体に近い可能性があります",
+          body: "体の横側から撮るこの診断では、まず体の前で捉える意識が一番試しやすい改善点です。窮屈さが減ると、面が安定しやすくなります。",
+          drill: "前打点ストップ素振り",
+          drillBody: "左足の前に仮想ボールを置き、そこで一度ラケットを止めてから振り抜きます。10回を2セット行います。",
+        },
+        {
+          title: "準備が少し遅い可能性があります",
+          body: "相手が打った直後に肩を入れる意識を持つと、余裕を持ってスイングに入れます。",
+          drill: "早めターンドリル",
+          drillBody: "ボールが来る前に横向きを作り、ラケットを後ろに準備した状態で一度止めます。",
+        },
+      ];
+      const priority = patterns[Math.floor(Math.random() * patterns.length)];
+      const result = {
+        mode: "簡易診断",
+        score: 72,
+        mainFinding: priority.title.includes("準備") ? "今日直すのは準備" : "今日直すのは打点",
+        summary: reason || "無料β版の簡易診断です。まずは撮影体験と結果のわかりやすさを確認してください。",
+        priority,
+        good: { title: "撮影して見返す準備ができました", body: "フォーム改善は、同じ角度で撮って比較するだけでも上達実感が出やすくなります。" },
+        drillTitle: priority.drill,
+        drillBody: priority.drillBody,
+        metrics: { knee: null, reach: null, follow: null, kneeLabel: "膝の曲がり", reachLabel: "打点の余裕", followLabel: "振り抜き" },
+        evidence: "サンプルまたは簡易診断です。実際に撮影すると動画の内容に合わせて結果が変わります。",
+        coachMemo: "MediaPipeを使えない環境では簡易診断になります。ネット接続ありで再度開くと骨格検出を試せます。※実際の指導はコーチにご相談ください。",
+      };
+      return adaptDiagnosisForShot(result, null, null);
+    }
+
+    function hasValue(value) {
+      if (value == null || value === "" || value === "--") return false;
+      if (typeof value === "number" && !Number.isFinite(value)) return false;
+      return true;
+    }
+
+    function setTrustChip(id, value) {
+      const el = $(id);
+      const show = hasValue(value);
+      el.parentElement.classList.toggle("hide", !show);
+      el.textContent = show ? value : "";
+      return show;
+    }
+
+    function levelBandIndex(score) {
+      if (score <= 50) return 0;
+      if (score <= 70) return 1;
+      if (score <= 85) return 2;
+      return 3;
+    }
+
+    function loadHistory() {
+      try {
+        const rows = JSON.parse(localStorage.getItem("history") || "[]");
+        return Array.isArray(rows) ? rows : [];
+      } catch {
+        return [];
+      }
+    }
+
+    function renderScoreContext(result) {
+      document.querySelectorAll("#levelBand span").forEach((el, i) => {
+        el.classList.toggle("current", i === levelBandIndex(result.score));
+      });
+      const deltaEl = $("scoreDelta");
+      deltaEl.classList.add("hide");
+      deltaEl.textContent = "";
+      if (state.resultKind !== "analysis") return;
+      let history = loadHistory();
+      const previous = [...history].reverse().find((row) => row.shot === state.shotType);
+      if (previous && Number.isFinite(previous.score)) {
+        const diff = result.score - previous.score;
+        const diffText = diff > 0 ? `+${diff}` : diff < 0 ? `${diff}` : "±0";
+        deltaEl.classList.remove("hide");
+        deltaEl.textContent = `前回 ${previous.score} → 今回 ${result.score} (${diffText})${diff > 0 ? " 🎉" : ""}`;
+        if (diff < 0) {
+          const note = document.createElement("small");
+          note.textContent = "フォームの試行錯誤中はスコアが揺れます。続けることが一番の上達です。";
+          deltaEl.appendChild(note);
+        }
+      }
+      history.push({ date: new Date().toISOString(), shot: state.shotType, score: result.score, mainPoint: result.mainFinding });
+      if (history.length > 50) history = history.slice(-50);
+      try { localStorage.setItem("history", JSON.stringify(history)); } catch {}
+    }
+
+    function escapeHtml(text) {
+      return String(text || "").replace(/[&<>"']/g, (ch) => (
+        { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch]
+      ));
+    }
+
+    function renderHistoryCard() {
+      const rows = loadHistory().filter((row) => row.shot === state.shotType && Number.isFinite(row.score));
+      const card = $("historyCard");
+      if (rows.length < 2) {
+        card.classList.add("hide");
+        return;
+      }
+      card.classList.remove("hide");
+
+      const recent = rows.slice(-8);
+      const scores = recent.map((row) => row.score);
+      const min = Math.min(...scores);
+      const max = Math.max(...scores);
+      const span = Math.max(1, max - min);
+      const W = 300, H = 96, PX = 16, PY = 20;
+      const points = recent.map((row, i) => ({
+        x: PX + (i * (W - PX * 2)) / Math.max(1, recent.length - 1),
+        y: H - PY - ((row.score - min) / span) * (H - PY * 2),
+        score: row.score,
+      }));
+      $("historyChart").innerHTML =
+        `<polyline points="${points.map((p) => `${p.x},${p.y}`).join(" ")}" fill="none" stroke="#54b772" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>` +
+        points.map((p) => `<circle cx="${p.x}" cy="${p.y}" r="4" fill="#2f8f58"/>`).join("") +
+        points.map((p) => `<text x="${p.x}" y="${p.y - 9}" text-anchor="middle" font-size="11" font-weight="700" fill="#67736b">${p.score}</text>`).join("");
+
+      $("historyList").innerHTML = rows.slice(-5).reverse().map((row) => {
+        const d = new Date(row.date);
+        const label = Number.isFinite(d.getTime()) ? `${d.getMonth() + 1}/${d.getDate()}` : "-";
+        return `<div class="history-row"><span>${label}</span><b>${row.score}</b><i>${escapeHtml(row.mainPoint)}</i></div>`;
+      }).join("");
+    }
+
+    function renderResult(result) {
+      const config = shotConfig();
+      const isSample = state.resultKind === "sample" || Boolean(result.mode?.includes("サンプル"));
+      const poseText = isSample ? "サンプル" : state.poseTotal ? `${state.poseDetected}/${state.poseTotal}` : null;
+      const qualityText = state.lastQuality?.label || (isSample ? "サンプル" : null);
+      const levelText = state.usedPose ? "AI診断 / 骨格検出あり" : result.mode?.includes("サンプル") ? "サンプル診断" : "AI簡易診断";
+      $("scoreValue").textContent = result.score;
+      $("scoreRing").style.setProperty("--score", result.score + "%");
+      renderScoreContext(result);
+      renderHistoryCard();
+      $("mainFinding").textContent = result.mainFinding;
+      $("summaryText").textContent = result.summary;
+      $("modeBadge").textContent = result.mode;
+      $("levelBadge").textContent = levelText;
+      $("focusTitle").textContent = result.priority?.title || config.focus;
+      $("focusBody").textContent = "次の撮影では、この1点だけ意識して変化を見ます。";
+      const shownChips = [
+        setTrustChip("trustPose", poseText),
+        setTrustChip("trustQuality", qualityText),
+        setTrustChip("trustScope", config.scope),
+      ].filter(Boolean).length;
+      $("trustRow").classList.toggle("hide", !shownChips);
+      $("priorityTitle").textContent = result.priority.title;
+      $("priorityBody").textContent = result.priority.body;
+      $("goodTitle").textContent = result.good.title;
+      $("goodBody").textContent = result.good.body;
+      $("drillTitle").textContent = result.drillTitle;
+      $("drillBody").textContent = result.drillBody;
+      const metricDefs = [
+        ["metricKnee", "metricKneeLabel", result.metrics?.knee, result.metrics?.kneeLabel || "膝の曲がり"],
+        ["metricReach", "metricReachLabel", result.metrics?.reach, result.metrics?.reachLabel || "打点の余裕"],
+        ["metricFollow", "metricFollowLabel", result.metrics?.follow, result.metrics?.followLabel || "振り抜き"],
+      ];
+      let shownMetrics = 0;
+      metricDefs.forEach(([valueId, labelId, value, label]) => {
+        const el = $(valueId);
+        const show = hasValue(value);
+        el.parentElement.classList.toggle("hide", !show);
+        if (show) {
+          el.textContent = value;
+          $(labelId).textContent = label;
+          shownMetrics++;
+        }
+      });
+      $("metricGrid").classList.toggle("hide", !shownMetrics);
+      $("evidenceText").textContent = result.evidence || "動画からフォームの特徴を確認しました。";
+      $("coachMemo").textContent = result.coachMemo;
+      $("sharePreviewScore").textContent = result.score;
+      $("sharePreviewScore").style.setProperty("--score", result.score + "%");
+      $("sharePreviewTitle").textContent = result.mainFinding;
+      $("sharePreviewBody").textContent = `${result.drillTitle}を試して、同じ角度でもう一度撮影。`;
+      renderPartChecks(result.parts || []);
+      renderFrameCompare(result);
+      if (state.captureDataUrl) {
+        $("captureCard").classList.remove("hide");
+        $("analysisCapture").src = state.captureDataUrl;
+        $("analysisCapture").classList.remove("hide");
+        $("analysisCaptureEmpty").classList.add("hide");
+        $("captureTitle").textContent = state.captureHasPose ? "骨格ライン付きキャプチャ" : "映像解析キャプチャ";
+        $("captureBody").textContent = state.captureHasPose
+          ? "肩・腰・膝などの骨格ラインを重ねたフレームです。体の軸や膝の角度を確認する根拠として使っています。"
+          : "骨格ラインは十分に取れませんでしたが、このフレームの明るさ・動き量・長さをもとに無料ブラウザ解析を行っています。";
+      } else {
+        $("captureCard").classList.add("hide");
+        $("analysisCapture").removeAttribute("src");
+        $("analysisCapture").classList.add("hide");
+        $("analysisCaptureEmpty").classList.remove("hide");
+        $("captureTitle").textContent = "フォームの根拠フレーム";
+        $("captureBody").textContent = "解析に使ったフレームを表示します。骨格が取れた場合は肩・腰・膝などのラインを重ねます。";
+      }
+    }
+
+    function renderPartChecks(parts) {
+      $("partsCard").classList.toggle("hide", !parts.length);
+      $("partGrid").innerHTML = parts.map((part) => (
+        `<div class="part-card ${part.warn ? "warn" : ""}"><b>${part.label}<i>${part.status}</i></b><span>${part.body}</span></div>`
+      )).join("");
+    }
+
+    function renderFrameCompare(result) {
+      const hasFrames = Boolean(state.goodCaptureDataUrl && state.improveCaptureDataUrl);
+      $("frameCompareCard").classList.toggle("hide", !hasFrames);
+      if (!hasFrames) return;
+      $("goodFrameImg").src = state.goodCaptureDataUrl;
+      $("improveFrameImg").src = state.improveCaptureDataUrl;
+      $("frameCompareText").textContent = "動画内から、安定して見える瞬間と今日の改善点が出ている瞬間を並べました。";
+      $("goodFrameText").textContent = result.good?.body || "軸や準備が安定しているフレームです。";
+      $("improveFrameText").textContent = result.priority?.body || "今日の改善テーマが出ているフレームです。";
+    }
+
+    async function showCompletion(result) {
+      $("completeText").textContent = `${result.mode}で結果を作成しました`;
+      $("completeOverlay").classList.add("show");
+      await wait(1250);
+      $("completeOverlay").classList.remove("show");
+      await wait(140);
+    }
+
+    function drawPose(lm) {
+      poseCtx.clearRect(0, 0, poseCanvas.width, poseCanvas.height);
+      poseCtx.lineWidth = Math.max(3, poseCanvas.width / 180);
+      poseCtx.strokeStyle = "rgba(184, 242, 70, .92)";
+      poseCtx.fillStyle = "#b8f246";
+      const lines = [[11,12],[11,13],[13,15],[12,14],[14,16],[11,23],[12,24],[23,24],[23,25],[25,27],[24,26],[26,28]];
+      for (const [a, b] of lines) {
+        if (!lm[a] || !lm[b]) continue;
+        poseCtx.beginPath();
+        poseCtx.moveTo(lm[a].x * poseCanvas.width, lm[a].y * poseCanvas.height);
+        poseCtx.lineTo(lm[b].x * poseCanvas.width, lm[b].y * poseCanvas.height);
+        poseCtx.stroke();
+      }
+      [11,12,13,14,15,16,23,24,25,26,27,28].forEach((i) => {
+        if (!lm[i]) return;
+        poseCtx.beginPath();
+        poseCtx.arc(lm[i].x * poseCanvas.width, lm[i].y * poseCanvas.height, Math.max(4, poseCanvas.width / 120), 0, Math.PI * 2);
+        poseCtx.fill();
+      });
+    }
+
+    function saveAnalysisCapture(hasPose, measurement = null) {
+      if (!analysisCanvas.width || !analysisCanvas.height) return;
+      const captureCanvas = document.createElement("canvas");
+      captureCanvas.width = analysisCanvas.width;
+      captureCanvas.height = analysisCanvas.height;
+      const ctx = captureCanvas.getContext("2d");
+      ctx.drawImage(analysisCanvas, 0, 0);
+      if (hasPose && poseCanvas.width && poseCanvas.height) {
+        ctx.drawImage(poseCanvas, 0, 0, captureCanvas.width, captureCanvas.height);
+        drawEvidenceGuides(ctx, captureCanvas.width, captureCanvas.height, state.lastLandmarks);
+      }
+      const dataUrl = captureCanvas.toDataURL("image/jpeg", .82);
+      state.captureDataUrl = dataUrl;
+      state.captureHasPose = Boolean(hasPose);
+      if (hasPose && measurement) {
+        const score = frameScore(measurement);
+        if (score > state.bestFrameScore) {
+          state.bestFrameScore = score;
+          state.goodCaptureDataUrl = dataUrl;
+        }
+        if (score < state.worstFrameScore) {
+          state.worstFrameScore = score;
+          state.improveCaptureDataUrl = dataUrl;
+        }
+      }
+    }
+
+    function frameScore(m) {
+      let score = 0;
+      if (Number.isFinite(m.kneeAngle)) score += m.kneeAngle > 162 ? -2 : 2;
+      if (Number.isFinite(m.reach)) score += m.reach < 0.34 ? -3 : 2;
+      if (Number.isFinite(m.follow)) score += m.follow > 0.02 ? -2 : 2;
+      if (Number.isFinite(m.center)) score += m.center > 0.12 ? -2 : 2;
+      return score;
+    }
+
+    function drawEvidenceGuides(ctx, width, height, lm) {
+      if (!lm?.[11] || !lm?.[12] || !lm?.[23] || !lm?.[24]) return;
+      const shoulderX = ((lm[11].x + lm[12].x) / 2) * width;
+      const shoulderY = ((lm[11].y + lm[12].y) / 2) * height;
+      const hipX = ((lm[23].x + lm[24].x) / 2) * width;
+      const hipY = ((lm[23].y + lm[24].y) / 2) * height;
+      const wrist = [lm[15], lm[16]].filter(Boolean).sort((a, b) => a.y - b.y)[0];
+
+      ctx.save();
+      ctx.lineWidth = Math.max(3, width / 170);
+      ctx.strokeStyle = "rgba(255, 242, 102, .95)";
+      ctx.fillStyle = "rgba(17, 25, 20, .82)";
+      ctx.beginPath();
+      ctx.moveTo(shoulderX, shoulderY);
+      ctx.lineTo(hipX, hipY);
+      ctx.stroke();
+      drawTag(ctx, "体の軸", shoulderX + 8, (shoulderY + hipY) / 2);
+
+      if (wrist) {
+        const x = wrist.x * width;
+        const y = wrist.y * height;
+        ctx.strokeStyle = "rgba(184, 242, 70, .95)";
+        ctx.beginPath();
+        ctx.arc(x, y, Math.max(10, width / 45), 0, Math.PI * 2);
+        ctx.stroke();
+        drawTag(ctx, "手首位置", x + 12, y - 6);
+      }
+      ctx.restore();
+    }
+
+    function drawTag(ctx, text, x, y) {
+      ctx.font = "700 18px sans-serif";
+      const width = ctx.measureText(text).width + 18;
+      ctx.fillRect(x, y - 22, width, 28);
+      ctx.fillStyle = "#fff";
+      ctx.fillText(text, x + 9, y - 3);
+      ctx.fillStyle = "rgba(17, 25, 20, .82)";
+    }
+
+    function resetProgress() {
+      setIndeterminate(false);
+      setProgress(0, 1, "解析準備中");
+      [1,2,3,4].forEach((n) => {
+        const el = $("step" + n);
+        el.classList.toggle("active", n === 1);
+        el.classList.remove("done");
+      });
+      $("frameCount").textContent = "0 frames";
+      $("analysisNote").textContent = "初回はAIモデルの読み込みに少し時間がかかります。";
+      poseCtx.clearRect(0, 0, poseCanvas.width, poseCanvas.height);
+    }
+
+    function setProgress(value, activeStep, label) {
+      $("progressNumber").textContent = Math.round(value) + "%";
+      $("progressBar").style.width = Math.min(100, Math.max(0, value)) + "%";
+      $("analysisMode").textContent = label;
+      [1,2,3,4].forEach((n) => {
+        const el = $("step" + n);
+        el.classList.toggle("done", n < activeStep);
+        el.classList.toggle("active", n === activeStep);
+      });
+    }
+
+    function runSample() {
+      state.captureDataUrl = "";
+      state.captureHasPose = false;
+      state.goodCaptureDataUrl = "";
+      state.improveCaptureDataUrl = "";
+      state.bestFrameScore = -Infinity;
+      state.worstFrameScore = Infinity;
+      state.partChecks = [];
+      state.lastQuality = null;
+      state.usedPose = false;
+      state.poseDetected = 0;
+      state.poseTotal = 0;
+      const result = fallbackResult("これは撮影なしで見られるサンプル結果です。実際に撮影すると、動画に合わせて診断が変わります。");
+      result.mode = shotConfig().sampleMode;
+      state.lastResult = result;
+      state.resultKind = "sample";
+      renderResult(result);
+      showScreen("result");
+    }
+
+    async function shareResult() {
+      const result = state.lastResult || fallbackResult();
+      const canvas = await buildShareCard(result);
+      state.shareCardCanvas = canvas;
+      $("shareCardPreview").src = canvas.toDataURL("image/png");
+      $("shareTextArea").classList.add("hide");
+      $("sharePanel").classList.add("show");
+    }
+
+    function canvasToBlob(canvas) {
+      return new Promise((resolve) => canvas.toBlob(resolve, "image/png"));
+    }
+
+    function loadImage(src) {
+      return new Promise((resolve) => {
+        if (!src) return resolve(null);
+        const img = new Image();
+        img.onload = () => resolve(img);
+        img.onerror = () => resolve(null);
+        img.src = src;
+      });
+    }
+
+    function roundedRectPath(ctx, x, y, w, h, r) {
+      ctx.beginPath();
+      ctx.moveTo(x + r, y);
+      ctx.arcTo(x + w, y, x + w, y + h, r);
+      ctx.arcTo(x + w, y + h, x, y + h, r);
+      ctx.arcTo(x, y + h, x, y, r);
+      ctx.arcTo(x, y, x + w, y, r);
+      ctx.closePath();
+    }
+
+    function wrapFillText(ctx, text, x, y, maxWidth, lineHeight, maxLines = 2) {
+      const chars = Array.from(String(text || ""));
+      const lines = [];
+      let line = "";
+      for (const ch of chars) {
+        if (line && ctx.measureText(line + ch).width > maxWidth) {
+          lines.push(line);
+          line = ch;
+          if (lines.length === maxLines) break;
+        } else {
+          line += ch;
+        }
+      }
+      if (lines.length < maxLines && line) lines.push(line);
+      lines.slice(0, maxLines).forEach((row, i) => ctx.fillText(row, x, y + i * lineHeight));
+    }
+
+    async function buildShareCard(result) {
+      const canvas = document.createElement("canvas");
+      canvas.width = 1080;
+      canvas.height = 1350;
+      const ctx = canvas.getContext("2d");
+
+      ctx.fillStyle = "#111914";
+      ctx.fillRect(0, 0, 1080, 1350);
+      const glow = ctx.createRadialGradient(540, 0, 60, 540, 0, 700);
+      glow.addColorStop(0, "rgba(184,242,70,.2)");
+      glow.addColorStop(1, "rgba(184,242,70,0)");
+      ctx.fillStyle = glow;
+      ctx.fillRect(0, 0, 1080, 700);
+
+      ctx.fillStyle = "#b8f246";
+      ctx.font = "900 44px Inter, 'Noto Sans JP', sans-serif";
+      ctx.fillText("TENNIS FORM AI", 64, 100);
+      ctx.fillStyle = "rgba(255,255,255,.62)";
+      ctx.font = "700 30px 'Noto Sans JP', sans-serif";
+      ctx.textAlign = "right";
+      ctx.fillText(`診断日 ${new Date().toLocaleDateString("ja-JP")}`, 1016, 100);
+      ctx.textAlign = "left";
+
+      const cx = 204;
+      const cy = 316;
+      const radius = 118;
+      ctx.lineWidth = 26;
+      ctx.lineCap = "round";
+      ctx.strokeStyle = "rgba(255,255,255,.14)";
+      ctx.beginPath();
+      ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.strokeStyle = "#b8f246";
+      ctx.beginPath();
+      ctx.arc(cx, cy, radius, -Math.PI / 2, -Math.PI / 2 + (clamp(result.score, 0, 100) / 100) * Math.PI * 2);
+      ctx.stroke();
+      ctx.fillStyle = "#fff";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.font = "900 100px Inter, sans-serif";
+      ctx.fillText(String(result.score), cx, cy - 10);
+      ctx.font = "900 26px Inter, sans-serif";
+      ctx.fillStyle = "rgba(255,255,255,.6)";
+      ctx.fillText("FORM SCORE", cx, cy + 64);
+      ctx.textAlign = "left";
+      ctx.textBaseline = "alphabetic";
+
+      ctx.fillStyle = "#fff";
+      ctx.font = "900 54px 'Noto Sans JP', sans-serif";
+      wrapFillText(ctx, result.mainFinding, 380, 268, 636, 68, 2);
+      ctx.fillStyle = "rgba(255,255,255,.74)";
+      ctx.font = "600 32px 'Noto Sans JP', sans-serif";
+      wrapFillText(ctx, `今日の1点: ${result.priority?.title || ""}`, 380, 396, 636, 44, 2);
+
+      const frameX = 64;
+      const frameY = 500;
+      const frameW = 952;
+      const frameH = 600;
+      const frameImg = await loadImage(state.captureDataUrl);
+      ctx.save();
+      roundedRectPath(ctx, frameX, frameY, frameW, frameH, 24);
+      ctx.clip();
+      if (frameImg) {
+        const scale = Math.max(frameW / frameImg.width, frameH / frameImg.height);
+        const dw = frameImg.width * scale;
+        const dh = frameImg.height * scale;
+        ctx.drawImage(frameImg, frameX + (frameW - dw) / 2, frameY + (frameH - dh) / 2, dw, dh);
+      } else {
+        ctx.fillStyle = "#182219";
+        ctx.fillRect(frameX, frameY, frameW, frameH);
+        ctx.fillStyle = "rgba(255,255,255,.55)";
+        ctx.font = "700 34px 'Noto Sans JP', sans-serif";
+        ctx.textAlign = "center";
+        ctx.fillText("フォーム画像は動画診断後に入ります", frameX + frameW / 2, frameY + frameH / 2);
+        ctx.textAlign = "left";
+      }
+      ctx.restore();
+      ctx.strokeStyle = "rgba(184,242,70,.5)";
+      ctx.lineWidth = 3;
+      roundedRectPath(ctx, frameX, frameY, frameW, frameH, 24);
+      ctx.stroke();
+
+      ctx.fillStyle = "rgba(255,255,255,.08)";
+      roundedRectPath(ctx, 64, 1136, 952, 140, 20);
+      ctx.fill();
+      ctx.fillStyle = "#b8f246";
+      ctx.font = "900 28px 'Noto Sans JP', sans-serif";
+      ctx.fillText("3分ドリル", 96, 1188);
+      ctx.fillStyle = "#fff";
+      ctx.font = "700 34px 'Noto Sans JP', sans-serif";
+      wrapFillText(ctx, result.drillTitle || "", 96, 1240, 888, 40, 1);
+
+      ctx.fillStyle = "rgba(255,255,255,.5)";
+      ctx.font = "700 24px 'Noto Sans JP', sans-serif";
+      ctx.fillText("動画は端末内で解析 / 無料β版", 64, 1322);
+      return canvas;
+    }
+
+    $("saveCardBtn").addEventListener("click", async () => {
+      if (!state.shareCardCanvas) return;
+      const blob = await canvasToBlob(state.shareCardCanvas);
+      if (!blob) {
+        showToast("画像を作成できませんでした。");
+        return;
+      }
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `tennis-form-ai-${Date.now()}.png`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 4000);
+      showToast("画像カードを保存しました。");
+    });
+
+    $("shareImageBtn").addEventListener("click", async () => {
+      if (!state.shareCardCanvas) return;
+      const blob = await canvasToBlob(state.shareCardCanvas);
+      if (!blob) {
+        showToast("画像を作成できませんでした。");
+        return;
+      }
+      const file = new File([blob], "tennis-form-ai.png", { type: "image/png" });
+      if (navigator.canShare?.({ files: [file] })) {
+        try {
+          await navigator.share({ files: [file], title: "Tennis Form AI 診断結果", text: makeShareText(state.lastResult || fallbackResult()) });
+        } catch {}
+      } else {
+        showToast("この端末は画像の直接共有に未対応です。「画像を保存」してから共有してください。");
+      }
+    });
+
+    $("shareXBtn").addEventListener("click", () => {
+      const text = makeShareText(state.lastResult || fallbackResult());
+      window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`, "_blank", "noopener");
+    });
+
+    $("shareLineBtn").addEventListener("click", () => {
+      const text = makeShareText(state.lastResult || fallbackResult());
+      const url = location.protocol.startsWith("http")
+        ? `https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(location.href)}&text=${encodeURIComponent(text)}`
+        : `https://line.me/R/share?text=${encodeURIComponent(text)}`;
+      window.open(url, "_blank", "noopener");
+    });
+
+    function makeShareText(result) {
+      return [
+        "Tennis Form AI 診断結果",
+        `スコア: ${result.score}`,
+        `最優先: ${result.priority.title}`,
+        `ドリル: ${result.drillTitle}`,
+        `診断: ${state.usedPose ? "骨格検出あり" : "AI簡易診断"}`,
+        "確認したいこと: 診断は合っている？説明はわかりやすい？もう一度撮りたい？",
+      ].join("\n");
+    }
+
+    function showToast(message) {
+      const toast = $("toast");
+      toast.textContent = message;
+      toast.classList.add("show");
+      clearTimeout(showToast.timer);
+      showToast.timer = setTimeout(() => toast.classList.remove("show"), 4200);
+    }
+
+    function fitCanvas(canvas, width, height) {
+      canvas.width = width;
+      canvas.height = height;
+    }
+
+    function waitForMetadata(video) {
+      return new Promise((resolve) => {
+        if (video.readyState >= 1) resolve();
+        else video.addEventListener("loadedmetadata", resolve, { once: true });
+      });
+    }
+
+    function seekVideo(video, time) {
+      return new Promise((resolve) => {
+        const done = () => resolve();
+        video.addEventListener("seeked", done, { once: true });
+        video.currentTime = Math.min(Math.max(time, 0), Math.max(0, video.duration - .05));
+      });
+    }
+
+    function sampleTimes(duration, count) {
+      const safeDuration = Math.max(2, duration || 8);
+      const start = safeDuration * .12;
+      const end = safeDuration * .88;
+      return Array.from({ length: count }, (_, i) => start + ((end - start) * i) / Math.max(1, count - 1));
+    }
+
+    function wait(ms) {
+      return new Promise((resolve) => setTimeout(resolve, ms));
+    }
+
+    function angle(a, b, c) {
+      if (!a || !b || !c) return NaN;
+      const ab = { x: a.x - b.x, y: a.y - b.y };
+      const cb = { x: c.x - b.x, y: c.y - b.y };
+      const dot = ab.x * cb.x + ab.y * cb.y;
+      const mag = Math.hypot(ab.x, ab.y) * Math.hypot(cb.x, cb.y);
+      if (!mag) return NaN;
+      return Math.acos(clamp(dot / mag, -1, 1)) * 180 / Math.PI;
+    }
+
+    function distance(a, b) {
+      if (!a || !b) return NaN;
+      return Math.hypot(a.x - b.x, a.y - b.y);
+    }
+
+    function average(values) {
+      const xs = values.filter(Number.isFinite);
+      return xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : NaN;
+    }
+
+    function median(values) {
+      const xs = values.filter(Number.isFinite).sort((a, b) => a - b);
+      if (!xs.length) return NaN;
+      const mid = Math.floor(xs.length / 2);
+      return xs.length % 2 ? xs[mid] : (xs[mid - 1] + xs[mid]) / 2;
+    }
+
+    function percentile(values, p) {
+      const xs = values.filter(Number.isFinite).sort((a, b) => a - b);
+      if (!xs.length) return NaN;
+      const index = Math.min(xs.length - 1, Math.max(0, Math.round((p / 100) * (xs.length - 1))));
+      return xs[index];
+    }
+
+    function clamp(value, min, max) {
+      return Math.min(max, Math.max(min, value));
+    }
+
+    function shortLabel(text) {
+      if (text.includes("下半身")) return "下半身";
+      if (text.includes("振り抜き")) return "振り抜き";
+      if (text.includes("軸")) return "体の軸";
+      if (text.includes("準備")) return "準備";
+      return "フォーム";
+    }
+
+    try {
+      if (localStorage.getItem("tennisFormGuideSeen") === "1") $("firstGuide").classList.add("hide");
+      const savedShot = localStorage.getItem("tennisFormShot");
+      if (savedShot === "forehand") state.shotType = savedShot;
+    } catch {}
+    updateShotCopy();
+    showScreen("capture");
+  </script>
+</body>
+</html>
