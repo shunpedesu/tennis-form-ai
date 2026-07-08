@@ -415,6 +415,81 @@
       background: var(--paper);
     }
 
+    .method-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      padding: 18px 18px 8px;
+      background: var(--paper);
+    }
+
+    .method-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      min-height: 118px;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--ink);
+      padding: 16px 10px;
+      cursor: pointer;
+      text-align: center;
+      box-shadow: 0 10px 26px rgba(20,37,23,.06);
+      transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease;
+    }
+
+    .method-card:active {
+      transform: translateY(1px);
+      box-shadow: 0 6px 16px rgba(20,37,23,.08);
+    }
+
+    .method-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+    }
+
+    .method-icon svg {
+      width: 26px;
+      height: 26px;
+      fill: none;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .method-card.record { border-color: rgba(47,143,88,.4); }
+    .method-card.record .method-icon { background: rgba(47,143,88,.13); }
+    .method-card.record .method-icon svg { stroke: var(--court); }
+
+    .method-card.upload { border-color: rgba(72,125,255,.35); }
+    .method-card.upload .method-icon { background: rgba(72,125,255,.12); }
+    .method-card.upload .method-icon svg { stroke: var(--blue); }
+
+    .method-card b {
+      font-family: var(--font-ui);
+      font-size: 15px;
+      font-weight: 900;
+      line-height: 1.1;
+    }
+
+    .method-sub {
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 700;
+      line-height: 1.35;
+    }
+
+    .capture-privacy {
+      padding: 4px 18px 10px;
+      background: var(--paper);
+    }
+
     .shot-selector {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -1856,11 +1931,26 @@
         <div class="flow-item"><b>03</b><span>今日の1点と<br>ドリルを表示</span></div>
       </div>
 
-      <div class="capture-actions">
-        <button class="primary" id="openCameraBtn">カメラで撮影する</button>
-        <div class="privacy-badge">🔒 動画は外部に送信されません — すべてスマホの中で解析</div>
-        <button class="secondary" id="pickVideoBtn">撮影済み動画を選ぶ</button>
+      <div class="method-grid" aria-label="診断する動画の入力方法を選択">
+        <button class="method-card record" id="openCameraBtn" type="button" aria-label="カメラでその場で撮影する">
+          <span class="method-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M4 7h3l1.6-2h6.8L17 7h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="3.4"/></svg>
+          </span>
+          <b>カメラで撮影</b>
+          <span class="method-sub">その場で撮る</span>
+        </button>
+        <button class="method-card upload" id="pickVideoBtn" type="button" aria-label="撮影済みの動画をアップロードする">
+          <span class="method-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M12 15V4M8 8l4-4 4 4"/><path d="M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg>
+          </span>
+          <b>動画をアップロード</b>
+          <span class="method-sub">撮影済みから選ぶ</span>
+        </button>
         <input class="file-input" id="videoInput" type="file" accept="video/*">
+      </div>
+
+      <div class="capture-privacy">
+        <div class="privacy-badge">🔒 動画は外部に送信されません — すべてスマホの中で解析</div>
       </div>
 
       <div class="shot-selector" aria-label="診断するショットを選択">
@@ -1870,7 +1960,7 @@
       </div>
 
       <div class="note">
-        カメラが使えない場合は、撮影済み動画を選んでも診断できます。
+        アップロードは撮影済みの動画ファイル(mp4 / mov など)に対応。体の横側から全身が写った動画がおすすめです。
       </div>
     </section>
 
