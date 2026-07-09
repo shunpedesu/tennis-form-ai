@@ -512,6 +512,126 @@
       line-height: 1.35;
     }
 
+    .profile-entry {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      width: calc(100% - 36px);
+      margin: 10px 18px 0;
+      padding: 11px 13px;
+      border-radius: 10px;
+      border: 1px dashed var(--line);
+      background: #fff;
+      color: var(--ink);
+      font-family: var(--font-jp);
+      font-size: 12.5px;
+      font-weight: 700;
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .profile-entry b { font-weight: 900; }
+
+    .profile-entry.compact {
+      width: 100%;
+      margin: 12px 0 0;
+      justify-content: center;
+      background: var(--soft);
+      border-style: solid;
+      font-size: 12px;
+    }
+
+    .profile-entry-edit {
+      margin-left: auto;
+      color: var(--court);
+      font-weight: 900;
+    }
+
+    .profile-overlay {
+      position: fixed;
+      inset: 0;
+      display: none;
+      place-items: center;
+      padding: 24px;
+      background: rgba(8, 16, 11, .6);
+      backdrop-filter: blur(8px);
+      z-index: 15;
+    }
+
+    .profile-overlay.show {
+      display: grid;
+      animation: fadeIn .18s ease both;
+    }
+
+    .profile-card {
+      width: min(380px, 100%);
+      background: #fff;
+      border-radius: 14px;
+      padding: 20px;
+      border: 1px solid var(--line);
+      box-shadow: 0 24px 60px rgba(0, 0, 0, .28);
+    }
+
+    .profile-card h2 {
+      margin: 0 0 6px;
+      font-family: var(--font-ui);
+      font-size: 19px;
+      letter-spacing: 0;
+    }
+
+    .profile-card > p {
+      margin: 0 0 16px;
+      color: var(--muted);
+      font-size: 12.5px;
+      line-height: 1.6;
+      font-weight: 600;
+    }
+
+    .profile-group { margin-bottom: 16px; }
+
+    .profile-label {
+      display: block;
+      margin-bottom: 8px;
+      font-family: var(--font-ui);
+      font-size: 12px;
+      font-weight: 900;
+      color: var(--ink);
+    }
+
+    .profile-options {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 7px;
+    }
+
+    .profile-options.wrap { grid-template-columns: repeat(2, 1fr); }
+
+    .profile-options button {
+      min-height: 44px;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--ink);
+      border-radius: 8px;
+      padding: 8px 6px;
+      font-family: var(--font-jp);
+      font-size: 12.5px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .profile-options button.active {
+      border-color: var(--court);
+      background: #111914;
+      color: #fff;
+    }
+
+    .profile-actions {
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      gap: 9px;
+      margin-top: 4px;
+    }
+
     .shot-selector {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -1277,6 +1397,152 @@
       color: #102015;
       border-color: var(--lime);
     }
+
+    /* ---- 結果ヘッダー(集約版) ---- */
+    .result-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .detect-inline {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 5px 6px 5px 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.14);
+    }
+
+    .detect-inline .detect-tag {
+      border-radius: 999px;
+      padding: 2px 7px;
+      background: rgba(184,242,70,.9);
+      color: #102015;
+      font-family: var(--font-ui);
+      font-size: 10px;
+      font-weight: 900;
+    }
+
+    .detect-inline b {
+      color: #fff;
+      font-family: var(--font-ui);
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .detect-inline .detect-edit {
+      border: 1px solid rgba(255,255,255,.22);
+      background: rgba(255,255,255,.06);
+      color: rgba(255,255,255,.8);
+      border-radius: 999px;
+      padding: 4px 9px;
+      font-size: 10.5px;
+      font-weight: 800;
+      font-family: var(--font-jp);
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .result-summary-main { min-width: 0; }
+
+    .level-name {
+      display: inline-block;
+      margin-bottom: 6px;
+      border-radius: 999px;
+      padding: 3px 9px;
+      background: rgba(184,242,70,.16);
+      color: var(--lime);
+      font-family: var(--font-ui);
+      font-size: 11px;
+      font-weight: 900;
+    }
+
+    /* ---- 今日の1点(主役カード) ---- */
+    .focus-card {
+      border-color: rgba(184,242,70,.55);
+      background:
+        linear-gradient(180deg, rgba(184,242,70,.10), rgba(255,255,255,0) 60%),
+        #fff;
+    }
+
+    #focusShot { margin-top: 12px; }
+
+    /* ---- ドリルカード ---- */
+    .drill-card .primary {
+      width: 100%;
+      margin-top: 12px;
+    }
+
+    /* ---- 詳しく見る(アコーディオン) ---- */
+    .detail-accordion {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: 0 10px 28px rgba(20, 37, 23, .06);
+      overflow: hidden;
+    }
+
+    .detail-accordion > summary {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      padding: 15px 14px;
+      cursor: pointer;
+      list-style: none;
+      font-family: var(--font-ui);
+      font-weight: 900;
+      font-size: 15px;
+    }
+
+    .detail-accordion > summary::-webkit-details-marker { display: none; }
+
+    .detail-accordion > summary::after {
+      content: "＋";
+      margin-left: auto;
+      color: var(--muted);
+      font-weight: 900;
+    }
+
+    .detail-accordion[open] > summary::after { content: "－"; }
+
+    .detail-accordion > summary small {
+      color: var(--muted);
+      font-family: var(--font-jp);
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .detail-block {
+      padding: 14px;
+      border-top: 1px solid var(--line);
+    }
+
+    .detail-block h3 {
+      margin: 0 0 8px;
+      font-family: var(--font-ui);
+      font-size: 14px;
+      font-weight: 900;
+    }
+
+    .detail-strong {
+      margin: 0 0 4px;
+      font-weight: 800;
+      font-size: 14px;
+    }
+
+    .detail-note {
+      margin: 0;
+      color: var(--muted);
+      font-size: 12.5px;
+      line-height: 1.65;
+      font-weight: 600;
+    }
+
+    .detail-note + .detail-note { margin-top: 8px; }
 
     .level-band {
       display: grid;
@@ -2053,6 +2319,10 @@
         <span>ショットの種類（フォア / バック / サーブ）は<b>AIが自動で判定</b>します。選ぶ必要はありません。</span>
       </div>
 
+      <button class="profile-entry" id="profileEntryBtn" type="button">
+        🎯 <span>あなたに合わせる</span>：<b id="profileSummaryCapture">レベル・目標を設定（任意）</b>
+      </button>
+
       <div class="note">
         アップロードは撮影済みの動画ファイル(mp4 / mov など)に対応。体の横側から全身が写った動画がおすすめです。
       </div>
@@ -2066,7 +2336,7 @@
       </div>
 
       <div class="instruction-card">
-        <h2>撮る前に確認</h2>
+        <h2>キレイに撮るコツ</h2>
         <div class="shoot-guide">
           <div class="shoot-example good">
             <svg viewBox="0 0 140 100" aria-hidden="true">
@@ -2087,7 +2357,7 @@
               <circle cx="124" cy="16" r="10" fill="#b8f246"/>
               <path d="M119 16 l4 4 l7 -8" stroke="#102015" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
-            <b>◎ 良い例</b>
+            <b>◎ 精度UP</b>
             <span>体の横側から・縦向き・全身が枠に入る</span>
           </div>
           <div class="shoot-example bad">
@@ -2112,7 +2382,7 @@
             <span>正面から・近すぎて足元が切れる</span>
           </div>
         </div>
-        <p class="shoot-guide-note"><span id="cameraShotGuide">同じショットを1〜3球だけ撮る</span>(録画は5〜15秒で十分)</p>
+        <p class="shoot-guide-note">当てはまらなくても診断できます。長い動画はAIがスイング区間を自動で探します。</p>
       </div>
 
       <div class="video-panel">
@@ -2159,7 +2429,7 @@
 
       <div class="section">
         <h2>この動画で解析しますか？</h2>
-        <p id="reviewShotText">全身が入っていて、スイングの動きがはっきり見える動画ほど診断が安定します。ショットの種類はAIが自動で判定します。</p>
+        <p id="reviewShotText">ショットの種類はAIが自動で判定します。まずはこのまま診断してみましょう。</p>
       </div>
 
       <div class="video-panel">
@@ -2179,7 +2449,7 @@
 
       <div class="quality-card" id="qualityCard">
         <div class="quality-head">
-          <b>撮影品質チェック</b>
+          <b>この動画のヒント</b>
           <span class="quality-status" id="qualityStatus">確認中</span>
         </div>
         <div class="quality-list" id="qualityList">
@@ -2242,142 +2512,101 @@
       </div>
 
       <div class="result-head">
-        <div class="done-chip">解析完了</div>
-        <div class="result-summary">
-          <div class="score" id="scoreRing"><span id="scoreValue">76</span></div>
-          <div>
-            <h1 id="mainFinding">今日直すのは打点</h1>
-            <p id="summaryText">体の少し前で捉える意識に絞ると、次の練習で変化が出やすいです。</p>
-          </div>
-        </div>
-        <div class="detect-bar">
-          <div class="detect-main">
+        <div class="result-top">
+          <div class="done-chip">解析完了</div>
+          <div class="detect-inline" id="detectBar">
             <span class="detect-tag">AI判定</span>
             <b id="detectedShotLabel">フォアハンド</b>
+            <button class="detect-edit" id="detectEditBtn" type="button">選び直す</button>
           </div>
-          <button class="detect-edit" id="detectEditBtn" type="button">違う場合は選び直す</button>
         </div>
         <div class="detect-picker hide" id="detectPicker">
           <button type="button" data-pick="forehand">フォアハンド</button>
           <button type="button" data-pick="backhand">バックハンド</button>
           <button type="button" data-pick="serve">サーブ</button>
         </div>
-        <div class="level-band" id="levelBand">
-          <span>〜50<br>基礎づくり期</span>
-          <span>51〜70<br>安定期</span>
-          <span>71〜85<br>打点調整期</span>
-          <span>86〜<br>完成期</span>
+        <div class="result-summary">
+          <div class="score" id="scoreRing"><span id="scoreValue">76</span></div>
+          <div class="result-summary-main">
+            <span class="level-name" id="levelName">安定期（51〜70）</span>
+            <h1 id="mainFinding">今日直すのは打点</h1>
+            <p id="summaryText">体の少し前で捉える意識に絞ると、次の練習で変化が出やすいです。</p>
+            <div class="score-delta hide" id="scoreDelta"></div>
+          </div>
         </div>
-        <div class="score-delta hide" id="scoreDelta"></div>
-        <div class="badge-row">
-          <span class="badge" id="modeBadge">MediaPipe解析</span>
-          <span class="badge" id="shotBadge">フォアハンド / 体の横側から撮影</span>
-          <span class="badge" id="levelBadge">AI簡易診断</span>
-        </div>
-        <div class="result-focus">
-          <span>今日の改善テーマ</span>
-          <b id="focusTitle">打点を体の少し前に置く</b>
-          <small id="focusBody">次の撮影では、この1点だけ意識して変化を見ます。</small>
-        </div>
-        <div class="trust-row" id="trustRow">
-          <div class="trust-chip"><b id="trustPose"></b>骨格検出</div>
-          <div class="trust-chip"><b id="trustQuality"></b>撮影品質</div>
-          <div class="trust-chip"><b id="trustScope">打点</b>診断範囲</div>
-        </div>
-        <p class="note" id="evidenceText" style="margin: 12px 0 0; background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.12); color: rgba(255,255,255,.76);">動画からフォームの特徴を確認しました。</p>
       </div>
 
       <div class="result-body">
-        <div class="card" id="captureCard">
-          <span class="card-label">解析キャプチャ</span>
-          <h2 id="captureTitle">フォームの根拠フレーム</h2>
-          <p id="captureBody">解析に使ったフレームを表示します。骨格が取れた場合は肩・腰・膝などのラインを重ねます。</p>
-          <div class="analysis-shot">
+        <!-- 今日の1点：骨格の証拠 + 改善点 + 指標を1枚に集約 -->
+        <div class="card focus-card">
+          <span class="card-label warn">今日の1点</span>
+          <h2 id="priorityTitle">打点が少し体に近い可能性</h2>
+          <p id="priorityBody">インパクト候補の瞬間に、手首と腰の距離が小さめです。体の前に打点を置くと、面が安定して振り抜きやすくなります。</p>
+          <div class="analysis-shot" id="focusShot">
             <img id="analysisCapture" alt="解析に使ったフォーム画像">
             <div class="empty-video" id="analysisCaptureEmpty">解析キャプチャは動画診断後に表示されます</div>
           </div>
-        </div>
-
-        <div class="card primary-card">
-          <span class="card-label warn">最優先</span>
-          <h2 id="priorityTitle">打点が少し体に近い可能性</h2>
-          <p id="priorityBody">インパクト候補の瞬間に、手首と腰の距離が小さめです。体の前に打点を置くと、面が安定して振り抜きやすくなります。</p>
           <div class="metric-grid" id="metricGrid">
             <div class="metric"><strong id="metricKnee"></strong><span id="metricKneeLabel">膝の曲がり</span></div>
             <div class="metric"><strong id="metricReach"></strong><span id="metricReachLabel">打点の余裕</span></div>
             <div class="metric"><strong id="metricFollow"></strong><span id="metricFollowLabel">振り抜き</span></div>
           </div>
+          <button class="profile-entry compact" id="profileEntryResultBtn" type="button">
+            🎯 <b id="profileSummaryResult">レベル・目標に合わせる</b><span class="profile-entry-edit">変更</span>
+          </button>
         </div>
 
-        <div class="card" id="frameCompareCard">
-          <span class="card-label">フォームのどこを見るか</span>
-          <h2>良かった瞬間 / 改善したい瞬間</h2>
-          <p id="frameCompareText">軸・手首・膝の見え方が違うフレームを並べて表示します。</p>
-          <div class="frame-compare">
-            <div class="frame-tile">
-              <img id="goodFrameImg" alt="良かったフォームのフレーム">
-              <b>良かった点</b>
-              <span id="goodFrameText">軸や準備が安定しているフレームです。</span>
-            </div>
-            <div class="frame-tile">
-              <img id="improveFrameImg" alt="改善したいフォームのフレーム">
-              <b>改善ポイント</b>
-              <span id="improveFrameText">今日の改善テーマが出ているフレームです。</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="card" id="partsCard">
-          <span class="card-label">部位別チェック</span>
-          <h2>軸・膝・打点・振り抜き</h2>
-          <p>どの部位を見て診断したかを、4つに分けて表示します。</p>
-          <div class="part-grid" id="partGrid"></div>
-        </div>
-
-        <div class="card">
-          <span class="card-label">良かった点</span>
-          <h2 id="goodTitle">準備姿勢は安定しています</h2>
-          <p id="goodBody">撮影範囲の中で体の軸が大きく崩れていません。次は打点だけに集中しましょう。</p>
-        </div>
-
-        <div class="card">
-          <span class="card-label">3分ドリル</span>
+        <!-- 3分ドリル → 再撮影(改善ループ) -->
+        <div class="card drill-card">
+          <span class="card-label">3分ドリル → もう一度撮る</span>
           <h2 id="drillTitle">前打点ストップ素振り</h2>
           <p id="drillBody">左足の前に仮想ボールを置き、そこで一度ラケットを止めてから振り抜きます。10回を2セット行い、もう一度撮影します。</p>
-        </div>
-
-        <div class="card next-action-card">
-          <span class="card-label">改善ループ</span>
-          <h2>ドリル後にもう一度撮る</h2>
-          <p>同じ角度で撮ると、今日の1点が変わったか見比べやすくなります。</p>
           <button class="primary" id="retryAfterDrillBtn">このドリルをやって撮影する</button>
         </div>
 
-        <div class="card">
-          <span class="card-label">共有カード</span>
-          <h2>友人に見せる1枚</h2>
-          <p>結果を共有するときは、スコア・改善点・ドリルだけに絞って伝えます。</p>
-          <div class="share-preview">
-            <div class="share-preview-score" id="sharePreviewScore">76</div>
-            <div>
-              <b id="sharePreviewTitle">今日直すのは打点</b>
-              <span id="sharePreviewBody">前打点ストップ素振りを試して、同じ角度でもう一度撮影。</span>
+        <!-- 詳しく見る(折りたたみ) -->
+        <details class="detail-accordion">
+          <summary><span>詳しく見る</span><small>良かった点・部位別・記録・根拠</small></summary>
+
+          <div class="detail-block">
+            <h3>良かった点</h3>
+            <p id="goodTitle" class="detail-strong">準備姿勢は安定しています</p>
+            <p id="goodBody" class="detail-note">撮影範囲の中で体の軸が大きく崩れていません。次は打点だけに集中しましょう。</p>
+          </div>
+
+          <div class="detail-block" id="partsCard">
+            <h3>部位別チェック</h3>
+            <div class="part-grid" id="partGrid"></div>
+          </div>
+
+          <div class="detail-block" id="frameCompareCard">
+            <h3>良かった瞬間 / 改善したい瞬間</h3>
+            <div class="frame-compare">
+              <div class="frame-tile">
+                <img id="goodFrameImg" alt="良かったフォームのフレーム">
+                <b>良かった点</b>
+                <span id="goodFrameText">軸や準備が安定しているフレームです。</span>
+              </div>
+              <div class="frame-tile">
+                <img id="improveFrameImg" alt="改善したいフォームのフレーム">
+                <b>改善ポイント</b>
+                <span id="improveFrameText">今日の改善テーマが出ているフレームです。</span>
+              </div>
             </div>
           </div>
-        </div>
 
-        <div class="card hide" id="historyCard">
-          <span class="card-label">これまでの記録</span>
-          <h2>スコアの推移</h2>
-          <p>同じ角度・同じショットで撮り続けると、変化が見えてきます。</p>
-          <svg id="historyChart" viewBox="0 0 300 96" aria-hidden="true"></svg>
-          <div id="historyList"></div>
-        </div>
+          <div class="detail-block hide" id="historyCard">
+            <h3>スコアの推移</h3>
+            <svg id="historyChart" viewBox="0 0 300 96" aria-hidden="true"></svg>
+            <div id="historyList"></div>
+          </div>
 
-        <div class="card">
-          <span class="card-label">コーチ用メモ</span>
-          <p id="coachMemo">この診断はAIによる簡易診断です。※実際の指導はコーチにご相談ください。実際の感覚と照らし合わせながら、次の撮影で変化を確認しましょう。</p>
-        </div>
+          <div class="detail-block">
+            <h3>判定の根拠・メモ</h3>
+            <p id="evidenceText" class="detail-note">動画からフォームの特徴を確認しました。</p>
+            <p id="coachMemo" class="detail-note">この診断はAIによる簡易診断です。※実際の指導はコーチにご相談ください。</p>
+          </div>
+        </details>
       </div>
     </section>
 
@@ -2404,6 +2633,33 @@
       <div>
         <b>📱 スマホを縦向きにしてください</b>
         <span>縦向きにすると、撮影も診断結果も見やすくなります。</span>
+      </div>
+    </div>
+    <div class="profile-overlay" id="profileOverlay">
+      <div class="profile-card">
+        <h2>あなたに合わせて調整</h2>
+        <p>選ぶとアドバイスとドリルが変わります。あとから何度でも変更できます。</p>
+        <div class="profile-group">
+          <span class="profile-label">いまのレベル</span>
+          <div class="profile-options" id="levelOptions">
+            <button type="button" data-level="beginner">初級</button>
+            <button type="button" data-level="intermediate">中級</button>
+            <button type="button" data-level="advanced">上級</button>
+          </div>
+        </div>
+        <div class="profile-group">
+          <span class="profile-label">目標</span>
+          <div class="profile-options wrap" id="goalOptions">
+            <button type="button" data-goal="stability">まず安定</button>
+            <button type="button" data-goal="spin">回転をかけたい</button>
+            <button type="button" data-goal="power">パワー</button>
+            <button type="button" data-goal="match">試合で勝ちたい</button>
+          </div>
+        </div>
+        <div class="profile-actions">
+          <button class="ghost" id="profileSkipBtn" type="button">スキップ</button>
+          <button class="primary" id="profileSaveBtn" type="button">この設定で見る</button>
+        </div>
       </div>
     </div>
     <div class="complete-overlay" id="completeOverlay" aria-live="polite">
@@ -2455,6 +2711,7 @@
       poseTimestamp: 0,
       poseCheckActive: false,
       poseCheckTimer: null,
+      deltaInfo: null,
     };
 
     const sourceVideo = $("sourceVideo");
@@ -2521,8 +2778,6 @@
       state.shotType = shot;
       const config = shotConfig();
       $("detectedShotLabel").textContent = config.label;
-      $("shotBadge").textContent = config.badge;
-      $("trustScope").textContent = config.scope;
       document.querySelectorAll("#detectPicker button").forEach((b) => {
         b.classList.toggle("active", b.dataset.pick === shot);
       });
@@ -2571,9 +2826,6 @@
       return configs[state.shotType] || configs.forehand;
     }
 
-    function updateShotCopy() {
-      $("shotBadge").textContent = shotConfig().badge;
-    }
 
     async function setSelectedVideo(file) {
       if (state.fileUrl) URL.revokeObjectURL(state.fileUrl);
@@ -2607,32 +2859,38 @@
       const items = [];
       let score = 0;
 
-      if (duration >= 5 && duration <= 15) {
+      // 長さ: 基本はどんな尺でもOK。長い動画はスイング区間を自動抽出する。
+      if (duration >= 4) {
         score += 1;
-        items.push({ ok: true, text: `長さは${Math.round(duration)}秒。診断しやすい範囲です。` });
-      } else if (duration > 15) {
-        items.push({ ok: false, text: `長さは${Math.round(duration)}秒。1〜3球に絞ると重要フレームが見つけやすくなります。` });
+        if (duration > 20) {
+          items.push({ ok: true, text: `長さは${Math.round(duration)}秒。長めですが、スイング区間をAIが自動で探します。` });
+        } else {
+          items.push({ ok: true, text: `長さは${Math.round(duration)}秒。このまま診断できます。` });
+        }
       } else if (duration > 0) {
-        items.push({ ok: false, text: `長さは${Math.round(duration)}秒。5秒以上あるとフォームの流れを見やすいです。` });
+        items.push({ ok: false, text: `長さは${Math.round(duration)}秒と短めですが、診断はできます。スイングが1回入っていればOKです。` });
       } else {
-        items.push({ ok: false, text: "動画の長さを確認できませんでした。解析は続けられます。" });
+        items.push({ ok: true, text: "長さは確認中です。このまま診断に進めます。" });
       }
 
+      // 向き: 横向きでも解析可能。あくまで「コツ」として案内。
       if ((sourceVideo.videoHeight || 0) >= (sourceVideo.videoWidth || 0)) {
         score += 1;
         items.push({ ok: true, text: "縦向き動画です。全身を入れやすい撮り方です。" });
       } else {
-        items.push({ ok: false, text: "横向き動画です。次回はスマホを縦向きにすると全身が入りやすいです。" });
-      }
-
-      if (file?.size && file.size > 40000) {
         score += 1;
-        items.push({ ok: true, text: "動画データを確認できました。解析に進めます。" });
-      } else {
-        items.push({ ok: false, text: "動画データが小さめです。撮影に失敗していないか確認してください。" });
+        items.push({ ok: true, text: "横向き動画でも診断できます（縦向きだと全身が入りやすいです）。" });
       }
 
-      const label = score >= 3 ? "良好" : score === 2 ? "診断OK" : "撮り直し推奨";
+      // データ: 極端に壊れている時だけ注意。
+      if (!file?.size || file.size > 20000) {
+        score += 1;
+        items.push({ ok: true, text: "動画を読み込めました。解析に進めます。" });
+      } else {
+        items.push({ ok: false, text: "動画データがかなり小さいです。撮影に失敗していないか確認してください。" });
+      }
+
+      const label = score >= 3 ? "診断できます" : score === 2 ? "診断できます" : "念のため確認を";
       return { score, label, items };
     }
 
@@ -2931,20 +3189,24 @@
       state.partChecks = [];
       try {
         const result = await analyzeVideo();
-        state.lastResult = result;
-        state.resultKind = "analysis";
-        renderResult(result);
+        finishAnalysis(result);
         await showCompletion(result);
         showScreen("result");
       } catch (error) {
         console.error(error);
         const result = fallbackResult("動画解析で一部エラーが出たため、簡易診断で表示しています。");
-        state.lastResult = result;
-        state.resultKind = "analysis";
-        renderResult(result);
+        finishAnalysis(result);
         await showCompletion(result);
         showScreen("result");
       }
+    }
+
+    function finishAnalysis(result) {
+      state.lastResult = result;
+      state.resultKind = "analysis";
+      applyProfileToResult(result);
+      finalizeAnalysisHistory(result);
+      renderResult(result);
     }
 
     async function analyzeVideo() {
@@ -2959,8 +3221,12 @@
       setIndeterminate(true);
       const pose = await getPoseLandmarker();
       setIndeterminate(false);
+      const duration = sourceVideo.duration || 8;
+      const activeWindow = await findActiveWindow(duration);
       setProgress(20, 1, "解析を開始しています");
-      const samples = sampleTimes(sourceVideo.duration || 8, 10);
+      const samples = activeWindow
+        ? sampleRange(activeWindow.start, activeWindow.end, 10)
+        : sampleTimes(duration, 10);
       state.poseTotal = samples.length;
       const measurements = [];
       const frameStats = [];
@@ -3381,6 +3647,8 @@
         evidence: `MediaPipe APIで骨格を ${detected}/${total} フレーム検出。明るさ ${Math.round(visual?.brightness || 0)}、動き量 ${Math.round(visual?.motion || 0)} も確認しました。`,
         coachMemo: `骨格検出 ${detected}/${total} フレーム。※簡易診断のため、実際の指導はコーチにご相談ください。`,
         parts: buildPartChecks(m),
+        _issues: issues.slice(),
+        _priorityFallback: priority,
       };
       return adaptDiagnosisForShot(result, m, visual);
     }
@@ -3434,13 +3702,13 @@
       return true;
     }
 
-    function setTrustChip(id, value) {
-      const el = $(id);
-      const show = hasValue(value);
-      el.parentElement.classList.toggle("hide", !show);
-      el.textContent = show ? value : "";
-      return show;
-    }
+
+    const LEVELS = [
+      { name: "基礎づくり期", range: "〜50" },
+      { name: "安定期", range: "51〜70" },
+      { name: "打点調整期", range: "71〜85" },
+      { name: "完成期", range: "86〜" },
+    ];
 
     function levelBandIndex(score) {
       if (score <= 50) return 0;
@@ -3458,31 +3726,123 @@
       }
     }
 
+    // 解析確定時に1回だけ呼ぶ: 前回比を計算して保持し、履歴に追記する。
+    function finalizeAnalysisHistory(result) {
+      const history = loadHistory();
+      const previous = [...history].reverse().find((row) => row.shot === state.shotType);
+      state.deltaInfo = (previous && Number.isFinite(previous.score))
+        ? { prev: previous.score, cur: result.score }
+        : null;
+      history.push({ date: new Date().toISOString(), shot: state.shotType, score: result.score, mainPoint: result.mainFinding });
+      while (history.length > 50) history.shift();
+      try { localStorage.setItem("history", JSON.stringify(history)); } catch {}
+    }
+
+    // 表示のみ(履歴は書き換えない)。プロフィール変更での再描画でも安全。
     function renderScoreContext(result) {
-      document.querySelectorAll("#levelBand span").forEach((el, i) => {
-        el.classList.toggle("current", i === levelBandIndex(result.score));
-      });
+      const lv = LEVELS[levelBandIndex(result.score)];
+      $("levelName").textContent = `${lv.name}（${lv.range}）`;
       const deltaEl = $("scoreDelta");
       deltaEl.classList.add("hide");
       deltaEl.textContent = "";
-      if (state.resultKind !== "analysis") return;
-      let history = loadHistory();
-      const previous = [...history].reverse().find((row) => row.shot === state.shotType);
-      if (previous && Number.isFinite(previous.score)) {
-        const diff = result.score - previous.score;
-        const diffText = diff > 0 ? `+${diff}` : diff < 0 ? `${diff}` : "±0";
-        deltaEl.classList.remove("hide");
-        deltaEl.textContent = `前回 ${previous.score} → 今回 ${result.score} (${diffText})${diff > 0 ? " 🎉" : ""}`;
-        if (diff < 0) {
-          const note = document.createElement("small");
-          note.textContent = "フォームの試行錯誤中はスコアが揺れます。続けることが一番の上達です。";
-          deltaEl.appendChild(note);
-        }
+      const d = state.deltaInfo;
+      if (!d) return;
+      const diff = d.cur - d.prev;
+      const diffText = diff > 0 ? `+${diff}` : diff < 0 ? `${diff}` : "±0";
+      deltaEl.classList.remove("hide");
+      deltaEl.textContent = `前回 ${d.prev} → 今回 ${d.cur} (${diffText})${diff > 0 ? " 🎉" : ""}`;
+      if (diff < 0) {
+        const note = document.createElement("small");
+        note.textContent = "フォームの試行錯誤中はスコアが揺れます。続けることが一番の上達です。";
+        deltaEl.appendChild(note);
       }
-      history.push({ date: new Date().toISOString(), shot: state.shotType, score: result.score, mainPoint: result.mainFinding });
-      if (history.length > 50) history = history.slice(-50);
-      try { localStorage.setItem("history", JSON.stringify(history)); } catch {}
     }
+
+    // ---- 習熟度・目標プロフィール ----
+    const PROFILE_LEVELS = { beginner: "初級", intermediate: "中級", advanced: "上級" };
+    const PROFILE_GOALS = { stability: "まず安定", spin: "回転をかけたい", power: "パワー", match: "試合で勝ちたい" };
+    const GOAL_PRIORITY = {
+      stability: ["balance", "knee", "reach", "follow"],
+      spin: ["follow", "reach", "balance", "knee"],
+      power: ["knee", "balance", "reach", "follow"],
+      match: ["balance", "reach", "knee", "follow"],
+    };
+
+    function getProfile() {
+      try {
+        const p = JSON.parse(localStorage.getItem("profile") || "null");
+        if (p && PROFILE_LEVELS[p.level] && PROFILE_GOALS[p.goal]) return p;
+      } catch {}
+      return null;
+    }
+
+    // 目標に応じて「今日の1点」を選び直し、レベルに応じてドリルの言い回しを調整する。
+    // 何度呼んでも同じ結果になる(冪等)ように、基準値から毎回組み立てる。
+    function applyProfileToResult(result) {
+      if (!result) return;
+      const p = getProfile();
+      if (result._issues && result._issues.length) {
+        let ordered = result._issues;
+        if (p && GOAL_PRIORITY[p.goal]) {
+          const order = GOAL_PRIORITY[p.goal];
+          const rank = (k) => { const i = order.indexOf(k); return i < 0 ? 99 : i; };
+          ordered = [...result._issues].sort((a, b) => rank(a.key) - rank(b.key));
+        }
+        const pr = ordered[0] || result._priorityFallback;
+        result.priority = { title: pr.title, body: pr.body, drill: pr.drill, drillBody: pr.drillBody };
+        result.mainFinding = pr.title.includes("打点") ? "今日直すのは打点" : "今日直すのは" + shortLabel(pr.title);
+        result.drillTitle = pr.drill;
+        result._baseDrillBody = pr.drillBody;
+      }
+      if (result._baseDrillBody == null) result._baseDrillBody = result.drillBody;
+      let body = result._baseDrillBody;
+      if (p && p.level === "beginner") {
+        body = body.replace(/10回を2セット行います。?/, "まずは5回×1セットでOKです。");
+        body += "（初級モード：細かい数値より「この1点」だけ意識で大丈夫です）";
+      } else if (p && p.level === "advanced") {
+        body += "（上級モード：各セット多めに行い、前後の動画を並べて比較しましょう）";
+      }
+      result.drillBody = body;
+    }
+
+    let profileDraft = { level: "intermediate", goal: "stability" };
+
+    function syncProfileOptions() {
+      document.querySelectorAll("#levelOptions button").forEach((b) => b.classList.toggle("active", b.dataset.level === profileDraft.level));
+      document.querySelectorAll("#goalOptions button").forEach((b) => b.classList.toggle("active", b.dataset.goal === profileDraft.goal));
+    }
+
+    function openProfile() {
+      profileDraft = { ...(getProfile() || { level: "intermediate", goal: "stability" }) };
+      syncProfileOptions();
+      $("profileOverlay").classList.add("show");
+    }
+
+    function updateProfileSummary() {
+      const p = getProfile();
+      const label = p ? `${PROFILE_LEVELS[p.level]} / ${PROFILE_GOALS[p.goal]}` : null;
+      $("profileSummaryCapture").textContent = label || "レベル・目標を設定（任意）";
+      $("profileSummaryResult").textContent = label ? `${label} 向けに調整中` : "レベル・目標に合わせる";
+    }
+
+    $("profileEntryBtn").addEventListener("click", openProfile);
+    $("profileEntryResultBtn").addEventListener("click", openProfile);
+    $("profileSkipBtn").addEventListener("click", () => $("profileOverlay").classList.remove("show"));
+    $("profileOverlay").addEventListener("click", (e) => {
+      if (e.target === $("profileOverlay")) $("profileOverlay").classList.remove("show");
+    });
+    document.querySelectorAll("#levelOptions button").forEach((b) => b.addEventListener("click", () => { profileDraft.level = b.dataset.level; syncProfileOptions(); }));
+    document.querySelectorAll("#goalOptions button").forEach((b) => b.addEventListener("click", () => { profileDraft.goal = b.dataset.goal; syncProfileOptions(); }));
+    $("profileSaveBtn").addEventListener("click", () => {
+      try { localStorage.setItem("profile", JSON.stringify(profileDraft)); } catch {}
+      $("profileOverlay").classList.remove("show");
+      updateProfileSummary();
+      if (state.lastResult && screens.result.classList.contains("active")) {
+        applyProfileToResult(state.lastResult);
+        renderResult(state.lastResult);
+      }
+      showToast(`${PROFILE_LEVELS[profileDraft.level]} / ${PROFILE_GOALS[profileDraft.goal]} に合わせました。`);
+    });
 
     function escapeHtml(text) {
       return String(text || "").replace(/[&<>"']/g, (ch) => (
@@ -3525,32 +3885,18 @@
     function renderResult(result) {
       const config = shotConfig();
       const isSample = state.resultKind === "sample" || Boolean(result.mode?.includes("サンプル"));
-      const poseText = isSample ? "サンプル" : state.poseTotal ? `${state.poseDetected}/${state.poseTotal}` : null;
-      const qualityText = state.lastQuality?.label || (isSample ? "サンプル" : null);
-      const levelText = state.usedPose ? "AI診断 / 骨格検出あり" : result.mode?.includes("サンプル") ? "サンプル診断" : "AI簡易診断";
       $("scoreValue").textContent = result.score;
       $("scoreRing").style.setProperty("--score", result.score + "%");
       renderScoreContext(result);
       renderHistoryCard();
       $("detectedShotLabel").textContent = config.label;
-      $("shotBadge").textContent = config.badge;
       document.querySelectorAll("#detectPicker button").forEach((b) => {
         b.classList.toggle("active", b.dataset.pick === state.shotType);
       });
       $("detectPicker").classList.add("hide");
-      document.querySelector(".detect-bar").classList.toggle("hide", !(state.usedPose && !isSample));
+      $("detectBar").classList.toggle("hide", !(state.usedPose && !isSample));
       $("mainFinding").textContent = result.mainFinding;
       $("summaryText").textContent = result.summary;
-      $("modeBadge").textContent = result.mode;
-      $("levelBadge").textContent = levelText;
-      $("focusTitle").textContent = result.priority?.title || config.focus;
-      $("focusBody").textContent = "次の撮影では、この1点だけ意識して変化を見ます。";
-      const shownChips = [
-        setTrustChip("trustPose", poseText),
-        setTrustChip("trustQuality", qualityText),
-        setTrustChip("trustScope", config.scope),
-      ].filter(Boolean).length;
-      $("trustRow").classList.toggle("hide", !shownChips);
       $("priorityTitle").textContent = result.priority.title;
       $("priorityBody").textContent = result.priority.body;
       $("goodTitle").textContent = result.good.title;
@@ -3576,28 +3922,18 @@
       $("metricGrid").classList.toggle("hide", !shownMetrics);
       $("evidenceText").textContent = result.evidence || "動画からフォームの特徴を確認しました。";
       $("coachMemo").textContent = result.coachMemo;
-      $("sharePreviewScore").textContent = result.score;
-      $("sharePreviewScore").style.setProperty("--score", result.score + "%");
-      $("sharePreviewTitle").textContent = result.mainFinding;
-      $("sharePreviewBody").textContent = `${result.drillTitle}を試して、同じ角度でもう一度撮影。`;
       renderPartChecks(result.parts || []);
       renderFrameCompare(result);
       if (state.captureDataUrl) {
-        $("captureCard").classList.remove("hide");
+        $("focusShot").classList.remove("hide");
         $("analysisCapture").src = state.captureDataUrl;
         $("analysisCapture").classList.remove("hide");
         $("analysisCaptureEmpty").classList.add("hide");
-        $("captureTitle").textContent = state.captureHasPose ? "骨格ライン付きキャプチャ" : "映像解析キャプチャ";
-        $("captureBody").textContent = state.captureHasPose
-          ? "肩・腰・膝などの骨格ラインを重ねたフレームです。体の軸や膝の角度を確認する根拠として使っています。"
-          : "骨格ラインは十分に取れませんでしたが、このフレームの明るさ・動き量・長さをもとに無料ブラウザ解析を行っています。";
       } else {
-        $("captureCard").classList.add("hide");
+        $("focusShot").classList.add("hide");
         $("analysisCapture").removeAttribute("src");
         $("analysisCapture").classList.add("hide");
         $("analysisCaptureEmpty").classList.remove("hide");
-        $("captureTitle").textContent = "フォームの根拠フレーム";
-        $("captureBody").textContent = "解析に使ったフレームを表示します。骨格が取れた場合は肩・腰・膝などのラインを重ねます。";
       }
     }
 
@@ -3614,7 +3950,6 @@
       if (!hasFrames) return;
       $("goodFrameImg").src = state.goodCaptureDataUrl;
       $("improveFrameImg").src = state.improveCaptureDataUrl;
-      $("frameCompareText").textContent = "動画内から、安定して見える瞬間と今日の改善点が出ている瞬間を並べました。";
       $("goodFrameText").textContent = result.good?.body || "軸や準備が安定しているフレームです。";
       $("improveFrameText").textContent = result.priority?.body || "今日の改善テーマが出ているフレームです。";
     }
@@ -3760,10 +4095,12 @@
       state.usedPose = false;
       state.poseDetected = 0;
       state.poseTotal = 0;
+      state.deltaInfo = null;
       const result = fallbackResult("これは撮影なしで見られるサンプル結果です。実際に撮影すると、動画に合わせて診断が変わります。");
       result.mode = shotConfig().sampleMode;
       state.lastResult = result;
       state.resultKind = "sample";
+      applyProfileToResult(result);
       renderResult(result);
       showScreen("result");
     }
@@ -4030,11 +4367,39 @@
       });
     }
 
+    function sampleRange(start, end, count) {
+      return Array.from({ length: count }, (_, i) => start + ((end - start) * i) / Math.max(1, count - 1));
+    }
+
     function sampleTimes(duration, count) {
       const safeDuration = Math.max(2, duration || 8);
-      const start = safeDuration * .12;
-      const end = safeDuration * .88;
-      return Array.from({ length: count }, (_, i) => start + ((end - start) * i) / Math.max(1, count - 1));
+      return sampleRange(safeDuration * .12, safeDuration * .88, count);
+    }
+
+    // 長い動画では、動き量が最大の区間(スイング付近)を粗くスキャンして特定し、
+    // その周辺を重点的に解析する。これにより「短く撮って」の制約を実質なくす。
+    async function findActiveWindow(duration) {
+      if (!duration || duration <= 12) return null;
+      const probes = 16;
+      const times = sampleRange(duration * .06, duration * .94, probes);
+      const w = analysisCanvas.width;
+      const h = analysisCanvas.height;
+      let previous = null;
+      const motions = [];
+      for (let i = 0; i < times.length; i++) {
+        setProgress(18 + Math.round((i / times.length) * 8), 1, "スイング区間を探しています");
+        await seekVideo(sourceVideo, times[i]);
+        analysisCtx.drawImage(sourceVideo, 0, 0, w, h);
+        const stats = measureFrame(analysisCtx, w, h, previous);
+        motions.push({ t: times[i], motion: previous ? stats.motion : 0 });
+        previous = stats;
+      }
+      let peak = 0;
+      let peakVal = -Infinity;
+      motions.forEach((m, i) => { if (m.motion > peakVal) { peakVal = m.motion; peak = i; } });
+      const center = motions[peak].t;
+      const half = Math.min(duration / 2, 5);
+      return { start: Math.max(0, center - half), end: Math.min(duration, center + half) };
     }
 
     function wait(ms) {
@@ -4090,7 +4455,7 @@
     try {
       if (localStorage.getItem("tennisFormGuideSeen") === "1") $("firstGuide").classList.add("hide");
     } catch {}
-    updateShotCopy();
+    updateProfileSummary();
     showScreen("capture");
   </script>
 </body>
