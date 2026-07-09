@@ -490,6 +490,28 @@
       background: var(--paper);
     }
 
+    .auto-detect-note {
+      display: flex;
+      align-items: flex-start;
+      gap: 9px;
+      margin: 4px 18px 0;
+      padding: 12px 14px;
+      border-radius: 10px;
+      border: 1px solid rgba(72,125,255,.28);
+      background: linear-gradient(180deg, rgba(72,125,255,.08), rgba(72,125,255,.03));
+      color: var(--ink);
+      font-size: 12.5px;
+      line-height: 1.55;
+      font-weight: 600;
+    }
+
+    .auto-detect-note b { font-weight: 900; }
+
+    .auto-detect-icon {
+      font-size: 16px;
+      line-height: 1.35;
+    }
+
     .shot-selector {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -1181,6 +1203,79 @@
       font-size: 13px;
       line-height: 1.6;
       font-weight: 500;
+    }
+
+    .detect-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: 14px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.14);
+    }
+
+    .detect-main {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+    }
+
+    .detect-tag {
+      border-radius: 999px;
+      padding: 3px 8px;
+      background: rgba(184,242,70,.9);
+      color: #102015;
+      font-family: var(--font-ui);
+      font-size: 10px;
+      font-weight: 900;
+    }
+
+    .detect-main b {
+      color: #fff;
+      font-family: var(--font-ui);
+      font-size: 16px;
+      font-weight: 900;
+    }
+
+    .detect-edit {
+      border: 1px solid rgba(255,255,255,.24);
+      background: rgba(255,255,255,.06);
+      color: rgba(255,255,255,.82);
+      border-radius: 999px;
+      padding: 6px 11px;
+      font-size: 11px;
+      font-weight: 800;
+      font-family: var(--font-jp);
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .detect-picker {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 7px;
+      margin-top: 8px;
+    }
+
+    .detect-picker button {
+      border: 1px solid rgba(255,255,255,.2);
+      background: rgba(255,255,255,.06);
+      color: #fff;
+      border-radius: 8px;
+      padding: 10px 6px;
+      font-family: var(--font-ui);
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .detect-picker button.active {
+      background: var(--lime);
+      color: #102015;
+      border-color: var(--lime);
     }
 
     .level-band {
@@ -1896,7 +1991,7 @@
       <div class="hero">
         <div class="court-lines"></div>
         <div class="hero-copy">
-          <div class="hero-kicker" id="heroKicker">無料β版 / フォアハンド診断</div>
+          <div class="hero-kicker" id="heroKicker">無料β版 / AIフォーム診断</div>
           <h1>1球撮って、フォームの伸びしろを発見</h1>
           <p>撮影から診断までスマホの中で完結。AIがフォームを見て「今日の1点」に絞って伸びしろを教えます。</p>
         </div>
@@ -1918,8 +2013,8 @@
             <button class="first-guide-close" id="firstGuideClose">OK</button>
           </div>
           <div class="first-guide-steps">
-            <span><b>1</b>ショットを選ぶ</span>
-            <span><b>2</b>体の横から縦向き撮影</span>
+            <span><b>1</b>撮る / 動画を選ぶ</span>
+            <span><b>2</b>AIが自動で解析</span>
             <span><b>3</b>今日の1点を見る</span>
           </div>
         </div>
@@ -1953,10 +2048,9 @@
         <div class="privacy-badge">🔒 動画は外部に送信されません — すべてスマホの中で解析</div>
       </div>
 
-      <div class="shot-selector" aria-label="診断するショットを選択">
-        <button class="shot-option active" data-shot="forehand"><b>フォア</b><span>打点</span></button>
-        <button class="shot-option" data-shot="backhand"><b>バック</b><span>軸</span><i class="soon-badge">近日公開</i></button>
-        <button class="shot-option" data-shot="serve"><b>サーブ</b><span>トス</span><i class="soon-badge">近日公開</i></button>
+      <div class="auto-detect-note">
+        <span class="auto-detect-icon" aria-hidden="true">✨</span>
+        <span>ショットの種類（フォア / バック / サーブ）は<b>AIが自動で判定</b>します。選ぶ必要はありません。</span>
       </div>
 
       <div class="note">
@@ -2018,7 +2112,7 @@
             <span>正面から・近すぎて足元が切れる</span>
           </div>
         </div>
-        <p class="shoot-guide-note"><span id="cameraShotGuide">フォアハンドだけを1〜3球撮る</span>(録画は5〜15秒で十分)</p>
+        <p class="shoot-guide-note"><span id="cameraShotGuide">同じショットを1〜3球だけ撮る</span>(録画は5〜15秒で十分)</p>
       </div>
 
       <div class="video-panel">
@@ -2065,7 +2159,7 @@
 
       <div class="section">
         <h2>この動画で解析しますか？</h2>
-        <p id="reviewShotText">全身が入っていて、フォアハンドの動きが見える動画ほど診断が安定します。</p>
+        <p id="reviewShotText">全身が入っていて、スイングの動きがはっきり見える動画ほど診断が安定します。ショットの種類はAIが自動で判定します。</p>
       </div>
 
       <div class="video-panel">
@@ -2155,6 +2249,18 @@
             <h1 id="mainFinding">今日直すのは打点</h1>
             <p id="summaryText">体の少し前で捉える意識に絞ると、次の練習で変化が出やすいです。</p>
           </div>
+        </div>
+        <div class="detect-bar">
+          <div class="detect-main">
+            <span class="detect-tag">AI判定</span>
+            <b id="detectedShotLabel">フォアハンド</b>
+          </div>
+          <button class="detect-edit" id="detectEditBtn" type="button">違う場合は選び直す</button>
+        </div>
+        <div class="detect-picker hide" id="detectPicker">
+          <button type="button" data-pick="forehand">フォアハンド</button>
+          <button type="button" data-pick="backhand">バックハンド</button>
+          <button type="button" data-pick="serve">サーブ</button>
         </div>
         <div class="level-band" id="levelBand">
           <span>〜50<br>基礎づくり期</span>
@@ -2300,17 +2406,6 @@
         <span>縦向きにすると、撮影も診断結果も見やすくなります。</span>
       </div>
     </div>
-    <div class="waitlist-overlay" id="waitlistOverlay">
-      <div class="waitlist-card">
-        <h2 id="waitlistTitle">バックハンド診断は近日公開！</h2>
-        <p>公開時にお知らせを受け取りますか？メールアドレスを入力してください。</p>
-        <input class="waitlist-input" id="waitlistEmail" type="email" placeholder="you@example.com" inputmode="email" autocomplete="email">
-        <div class="waitlist-actions">
-          <button class="secondary" id="waitlistCancelBtn">閉じる</button>
-          <button class="primary" id="waitlistSubmitBtn">お知らせを受け取る</button>
-        </div>
-      </div>
-    </div>
     <div class="complete-overlay" id="completeOverlay" aria-live="polite">
       <div class="complete-card">
         <div class="complete-ring">✓</div>
@@ -2412,50 +2507,27 @@
         showToast("コピーできない場合は、文章を長押ししてコピーしてください。");
       }
     });
-    document.querySelectorAll(".shot-option").forEach((button) => {
+    $("detectEditBtn").addEventListener("click", () => {
+      $("detectPicker").classList.toggle("hide");
+    });
+    document.querySelectorAll("#detectPicker button").forEach((button) => {
       button.addEventListener("click", () => {
-        const shot = button.dataset.shot;
-        if (shot !== "forehand") {
-          openWaitlist(shot);
-          return;
-        }
-        state.shotType = shot;
-        try { localStorage.setItem("tennisFormShot", shot); } catch {}
-        updateShotCopy();
+        applyDetectedShot(button.dataset.pick, true);
+        $("detectPicker").classList.add("hide");
       });
     });
 
-    let waitlistShot = "backhand";
-    function openWaitlist(shot) {
-      waitlistShot = shot;
-      const label = shot === "serve" ? "サーブ" : "バックハンド";
-      $("waitlistTitle").textContent = `${label}診断は近日公開！`;
-      $("waitlistEmail").value = "";
-      $("waitlistOverlay").classList.add("show");
+    function applyDetectedShot(shot, userChosen = false) {
+      state.shotType = shot;
+      const config = shotConfig();
+      $("detectedShotLabel").textContent = config.label;
+      $("shotBadge").textContent = config.badge;
+      $("trustScope").textContent = config.scope;
+      document.querySelectorAll("#detectPicker button").forEach((b) => {
+        b.classList.toggle("active", b.dataset.pick === shot);
+      });
+      if (userChosen) showToast(`${config.label}として表示を切り替えました。`);
     }
-
-    $("waitlistCancelBtn").addEventListener("click", () => $("waitlistOverlay").classList.remove("show"));
-    $("waitlistOverlay").addEventListener("click", (event) => {
-      if (event.target === $("waitlistOverlay")) $("waitlistOverlay").classList.remove("show");
-    });
-    $("waitlistSubmitBtn").addEventListener("click", () => {
-      const email = $("waitlistEmail").value.trim();
-      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-        showToast("メールアドレスの形式を確認してください。");
-        return;
-      }
-      let duplicated = false;
-      try {
-        const list = JSON.parse(localStorage.getItem("waitlist") || "[]");
-        duplicated = list.some((row) => row.shot === waitlistShot && row.email === email);
-        if (!duplicated) {
-          list.push({ shot: waitlistShot, email, date: new Date().toISOString() });
-          localStorage.setItem("waitlist", JSON.stringify(list));
-        }
-      } catch {}
-      $("waitlistOverlay").classList.remove("show");
-      showToast(duplicated ? "このメールアドレスは登録済みです。公開までお待ちください！" : "登録ありがとうございます！公開時にお知らせします。");
-    });
 
     document.querySelectorAll("[data-back]").forEach((button) => {
       button.addEventListener("click", () => {
@@ -2476,28 +2548,31 @@
       const configs = {
         forehand: {
           label: "フォアハンド",
-          kicker: "無料β版 / フォアハンド診断",
-          guide: "フォアハンドだけを1〜3球撮る",
-          review: "全身が入っていて、フォアハンドの準備・打点・振り抜きが見える動画ほど診断が安定します。",
           badge: "フォアハンド / 体の横側から撮影",
           sampleMode: "フォアハンド サンプル",
           focus: "打点を体の少し前に置く",
           scope: "打点",
+        },
+        backhand: {
+          label: "バックハンド",
+          badge: "バックハンド / 体の横側から撮影",
+          sampleMode: "バックハンド サンプル",
+          focus: "準備を早くして軸を残す",
+          scope: "軸",
+        },
+        serve: {
+          label: "サーブ",
+          badge: "サーブ / 体の横側から撮影",
+          sampleMode: "サーブ サンプル",
+          focus: "トスから伸び上がりをつなげる",
+          scope: "トス",
         },
       };
       return configs[state.shotType] || configs.forehand;
     }
 
     function updateShotCopy() {
-      const config = shotConfig();
-      $("heroKicker").textContent = config.kicker;
-      $("cameraShotGuide").textContent = config.guide;
-      $("reviewShotText").textContent = config.review;
-      $("shotBadge").textContent = config.badge;
-      document.body.dataset.shot = state.shotType;
-      document.querySelectorAll(".shot-option").forEach((button) => {
-        button.classList.toggle("active", button.dataset.shot === state.shotType);
-      });
+      $("shotBadge").textContent = shotConfig().badge;
     }
 
     async function setSelectedVideo(file) {
@@ -2845,6 +2920,7 @@
       }
       showScreen("analysis");
       resetProgress();
+      state.shotType = "forehand";
       state.usedPose = false;
       state.poseDetected = 0;
       state.poseTotal = 0;
@@ -2888,6 +2964,7 @@
       state.poseTotal = samples.length;
       const measurements = [];
       const frameStats = [];
+      const poseFrames = [];
       let previousFrameStats = null;
       let detected = 0;
 
@@ -2908,6 +2985,7 @@
           detected++;
           state.poseDetected = detected;
           state.lastLandmarks = landmarks;
+          poseFrames.push(landmarks);
           const measurement = measurePose(landmarks);
           measurements.push(measurement);
           drawPose(landmarks);
@@ -2930,6 +3008,8 @@
 
       state.usedPose = true;
       state.poseDetected = detected;
+      const detectedShot = classifyShot(poseFrames);
+      if (detectedShot) state.shotType = detectedShot;
       $("analysisMode").textContent = `MediaPipe解析 ${detected}/${samples.length}`;
       const aggregate = aggregateMeasurements(measurements);
 
@@ -3107,6 +3187,68 @@
       return { kneeAngle, reach, follow, shoulderWidth, hipWidth, stance, center };
     }
 
+    // 骨格の動きからショット種別(サーブ / フォア / バック)を推定する。
+    // サーブ = 利き腕の手首が頭上まで大きく伸び上がる、という明確な特徴で判定(信頼度高め)。
+    // フォア/バック = 打点フレームで打つ手が体の中心に対しどちら側に出るかで推定(ベストエフォート)。
+    function classifyShot(frames) {
+      const valid = frames.filter((lm) => lm && lm[11] && lm[12] && lm[15] && lm[16]);
+      if (valid.length < 3) return null; // 判定材料が足りない → 既定のまま
+
+      const yOf = (p) => (p && Number.isFinite(p.y) ? p.y : NaN);
+      let serveRaiseMax = -Infinity;
+      let wristAboveHeadFrames = 0;
+      valid.forEach((lm) => {
+        const shoulderY = (yOf(lm[11]) + yOf(lm[12])) / 2;
+        const wristMinY = Math.min(yOf(lm[15]), yOf(lm[16]));
+        if (Number.isFinite(shoulderY) && Number.isFinite(wristMinY)) {
+          serveRaiseMax = Math.max(serveRaiseMax, shoulderY - wristMinY);
+        }
+        const nose = lm[0];
+        if (nose && Number.isFinite(nose.y) && wristMinY < nose.y - 0.02) wristAboveHeadFrames++;
+      });
+
+      // 手首が頭より上に出るフレームがあり、肩より大きく上へ伸びていればサーブ
+      if (wristAboveHeadFrames >= 1 && serveRaiseMax > 0.12) return "serve";
+      return classifyGroundstroke(valid);
+    }
+
+    function classifyGroundstroke(frames) {
+      const pathLength = (idx) => {
+        let total = 0;
+        let prev = null;
+        frames.forEach((lm) => {
+          const p = lm[idx];
+          if (p && prev) total += Math.hypot(p.x - prev.x, p.y - prev.y);
+          if (p) prev = p;
+        });
+        return total;
+      };
+      // 動きの大きい方の手を利き手とみなす
+      const domWrist = pathLength(16) >= pathLength(15) ? 16 : 15;
+      const domShoulder = domWrist === 16 ? 12 : 11;
+
+      // 打点候補 = 利き手首が体の中心から最も横に離れたフレーム
+      let best = null;
+      let bestExcursion = -Infinity;
+      frames.forEach((lm) => {
+        const w = lm[domWrist];
+        if (!w) return;
+        const centerX = (lm[11].x + lm[12].x + lm[23].x + lm[24].x) / 4;
+        const excursion = Math.abs(w.x - centerX);
+        if (excursion > bestExcursion) {
+          bestExcursion = excursion;
+          best = { w, centerX, lm };
+        }
+      });
+      if (!best) return "forehand";
+
+      // 利き肩と打点の手首が体の中心に対して同じ側 → フォア、逆側(体を横切る) → バック。
+      // カメラのミラー有無に関わらず、体の中心を基準にした左右関係は保たれる。
+      const shoulderSide = Math.sign(best.lm[domShoulder].x - best.centerX) || 1;
+      const wristSide = Math.sign(best.w.x - best.centerX) || 1;
+      return wristSide === shoulderSide ? "forehand" : "backhand";
+    }
+
     function aggregateMeasurements(rows) {
       const pick = (key) => rows.map((row) => row[key]).filter(Number.isFinite);
       return {
@@ -3245,8 +3387,12 @@
 
     function adaptDiagnosisForShot(result) {
       const config = shotConfig();
-      result.evidence = `${config.label}として解析。` + (result.evidence || "");
-      result.coachMemo = result.coachMemo || "フォアハンド診断(β版)では、準備・打点の余裕・膝・振り抜きを中心に簡易診断しています。";
+      const prefix = state.usedPose ? `${config.label}と判定して解析。` : "撮影条件から解析。";
+      result.evidence = prefix + (result.evidence || "");
+      result.coachMemo = result.coachMemo || "β版では、膝・打点の余裕・振り抜き・体の軸を中心に簡易診断しています。";
+      if (state.usedPose && state.shotType !== "forehand") {
+        result.coachMemo += `（${config.label}は現在、フォーム全体の共通指標での簡易診断です）`;
+      }
       return result;
     }
 
@@ -3386,6 +3532,13 @@
       $("scoreRing").style.setProperty("--score", result.score + "%");
       renderScoreContext(result);
       renderHistoryCard();
+      $("detectedShotLabel").textContent = config.label;
+      $("shotBadge").textContent = config.badge;
+      document.querySelectorAll("#detectPicker button").forEach((b) => {
+        b.classList.toggle("active", b.dataset.pick === state.shotType);
+      });
+      $("detectPicker").classList.add("hide");
+      document.querySelector(".detect-bar").classList.toggle("hide", !(state.usedPose && !isSample));
       $("mainFinding").textContent = result.mainFinding;
       $("summaryText").textContent = result.summary;
       $("modeBadge").textContent = result.mode;
@@ -3595,6 +3748,7 @@
     }
 
     function runSample() {
+      state.shotType = "forehand";
       state.captureDataUrl = "";
       state.captureHasPose = false;
       state.goodCaptureDataUrl = "";
@@ -3935,8 +4089,6 @@
 
     try {
       if (localStorage.getItem("tennisFormGuideSeen") === "1") $("firstGuide").classList.add("hide");
-      const savedShot = localStorage.getItem("tennisFormShot");
-      if (savedShot === "forehand") state.shotType = savedShot;
     } catch {}
     updateShotCopy();
     showScreen("capture");
