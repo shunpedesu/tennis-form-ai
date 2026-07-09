@@ -512,6 +512,25 @@
       line-height: 1.35;
     }
 
+    .app-footer {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      margin: 18px 18px 8px;
+      padding: 14px 12px calc(14px + env(safe-area-inset-bottom));
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.55;
+      text-align: center;
+    }
+
+    .app-footer a {
+      color: var(--court);
+      font-weight: 800;
+      text-decoration: none;
+    }
+
     .profile-entry {
       display: flex;
       align-items: center;
@@ -1449,6 +1468,14 @@
 
     .result-summary-main { min-width: 0; }
 
+    .result-disclaimer {
+      margin: 12px 0 0;
+      color: rgba(255,255,255,.5);
+      font-size: 10.5px;
+      line-height: 1.5;
+      font-weight: 600;
+    }
+
     .level-name {
       display: inline-block;
       margin-bottom: 6px;
@@ -2326,6 +2353,11 @@
       <div class="note">
         アップロードは撮影済みの動画ファイル(mp4 / mov など)に対応。体の横側から全身が写った動画がおすすめです。
       </div>
+
+      <div class="app-footer">
+        <span>※ AIによる簡易診断です。スコアは目安（参考値）としてご活用ください。</span>
+        <a href="legal.html">利用規約・プライバシーポリシー</a>
+      </div>
     </section>
 
     <section class="screen" id="screen-camera">
@@ -2534,6 +2566,7 @@
             <div class="score-delta hide" id="scoreDelta"></div>
           </div>
         </div>
+        <p class="result-disclaimer">※ AIによる簡易診断です。スコアは目安（参考値）です。</p>
       </div>
 
       <div class="result-body">
@@ -4458,5 +4491,7 @@
     updateProfileSummary();
     showScreen("capture");
   </script>
+  <!-- Vercel Web Analytics: 匿名のページ表示数のみ計測（動画・個人情報は送信しません）。Vercelダッシュボードで Analytics を有効化すると計測開始します。 -->
+  <script defer src="/_vercel/insights/script.js"></script>
 </body>
 </html>
